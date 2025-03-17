@@ -2,7 +2,7 @@
   <img src="logo.svg" alt="Hollow Logo">
 </p>
 
-# Hollow ⚡
+# Hollow ⧲
 
 ![Electron](https://img.shields.io/badge/Electron-Latest-47848F?logo=electron&logoColor=white)
 ![React](https://img.shields.io/badge/React-19%2B-61DAFB?logo=react&logoColor=white)
