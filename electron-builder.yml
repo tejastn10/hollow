@@ -1,6 +1,6 @@
 appId: com.electron.app
 
-productName: brimstone
+productName: hollow
 directories:
   buildResources: build
 
@@ -16,7 +16,7 @@ asarUnpack:
   - resources/**
 
 win:
-  executableName: brimstone
+  executableName: hollow
 
 nsis:
   artifactName: ${name}-${version}-setup.${ext}
