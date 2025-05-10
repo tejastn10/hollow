@@ -59,7 +59,7 @@ const eslintConfig = [
 			sourceType: "script",
 
 			parserOptions: {
-				project: "./tsconfig.eslint.json",
+				project: "./tsconfig.json",
 			},
 		},
 
