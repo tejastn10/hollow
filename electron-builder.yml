@@ -10,7 +10,7 @@ files:
   - '!vite.config.{js,ts,mjs,cjs}'
   - '!{.eslintignore,.eslint.config.mjs,.prettierignore,.prettierrc.yml,dev-app-update.yml,LICENSE.md,README.md}'
   - '!{.env,.env.*,.nvmrc,pnpm-lock.yaml}'
-  - '!{tsconfig.json,tsconfig.node.json,tsconfig.web.json,tsconfig.eslint.json}'
+  - '!{tsconfig.json}'
 
 asarUnpack:
   - resources/**
