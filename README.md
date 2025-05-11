@@ -167,10 +167,7 @@ hollow/
 ├── package.json                # Project dependencies and scripts
 ├── package-lock.json           # Locked dependencies
 ├── README.md                   # Project documentation
-├── tsconfig.eslint.json        # TypeScript config for ESLint
 ├── tsconfig.json               # Main TypeScript configuration
-├── tsconfig.node.json          # Node-specific TypeScript config
-├── tsconfig.web.json           # Web-specific TypeScript config
 └── vite.config.ts              # Vite configuration
 ```
 
