@@ -36,7 +36,8 @@
 		"@electron-toolkit/preload": "^3.0.2",
 		"@electron-toolkit/utils": "^4.0.0",
 		"antd": "^5.25.1",
-		"electron-updater": "^6.6.2"
+		"electron-updater": "^6.6.2",
+		"srotas": "^1.0.2"
 	},
 	"devDependencies": {
 		"@commitlint/cli": "^19.8.1",
@@ -59,7 +60,7 @@
 		"eslint-plugin-react-hooks": "^5.2.0",
 		"eslint-plugin-react-refresh": "^0.4.20",
 		"husky": "^9.1.7",
-		"lint-staged": "^15.5.2",
+		"lint-staged": "^16.0.0",
 		"prettier": "^3.5.3",
 		"react": "^19.1.0",
 		"react-dom": "^19.1.0",
