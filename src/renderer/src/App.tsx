@@ -1,24 +1,26 @@
 import { FC } from "react";
 
-import { Button } from "antd";
+import { App as AntdApp, Button } from "antd";
+
+import { ThemeProvider } from "./theme/ThemeProvider";
+import { StatusBar } from "./container/StatusBar";
 
 const App: FC = () => {
 	const ipcHandle = (): void => window.electron.ipcRenderer.send("ping");
 
 	return (
-		<div
-			style={{
-				display: "flex",
-				alignItems: "center",
-				justifyContent: "center",
-				width: "100%",
-				height: "100%",
-			}}
-		>
-			<Button type="primary" onClick={ipcHandle}>
-				Ping
-			</Button>
-		</div>
+		<>
+			<ThemeProvider>
+				<AntdApp>
+					<div className="App">
+						<Button type="primary" onClick={ipcHandle}>
+							Ping
+						</Button>
+					</div>
+					<StatusBar />
+				</AntdApp>
+			</ThemeProvider>
+		</>
 	);
 };
 
