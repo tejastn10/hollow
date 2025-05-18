@@ -5,6 +5,8 @@ import { App as AntdApp, Button } from "antd";
 import { ThemeProvider } from "./theme/ThemeProvider";
 import { StatusBar } from "./container/StatusBar";
 
+import styled from "styled-components";
+
 const App: FC = () => {
 	const ipcHandle = (): void => window.electron.ipcRenderer.send("ping");
 
@@ -12,12 +14,12 @@ const App: FC = () => {
 		<>
 			<ThemeProvider>
 				<AntdApp>
-					<div className="App">
+					<AppContainer>
 						<Button type="primary" onClick={ipcHandle}>
 							Ping
 						</Button>
-					</div>
-					<StatusBar />
+						<StatusBar />
+					</AppContainer>
 				</AntdApp>
 			</ThemeProvider>
 		</>
@@ -25,3 +27,18 @@ const App: FC = () => {
 };
 
 export { App };
+
+const AppContainer = styled.div`
+	display: flex;
+	flex-direction: column;
+	justify-content: space-between;
+	align-items: center;
+
+	background-color: ${(props) => (props.theme === "dark" ? "#000000" : "#ffffff")};
+	color: ${(props) => (props.theme === "dark" ? "#ffffff" : "#000000")};
+
+	height: 100vh;
+	width: 100vw;
+
+	overflow: hidden;
+`;
