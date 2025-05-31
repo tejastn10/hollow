@@ -15,6 +15,8 @@ const createWindow = (): BrowserWindow => {
 		show: false,
 		icon: getIconPath(),
 		autoHideMenuBar: true,
+		// TODO: Uncomment this line when custom title bar is implemented.
+		// titleBarStyle: "hidden",
 		webPreferences: {
 			preload: join(__dirname, "../preload/index.js"),
 			sandbox: false,
