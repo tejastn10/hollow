@@ -2,16 +2,24 @@ import { app, shell, BrowserWindow, ipcMain } from "electron";
 import { join } from "path";
 import { electronApp, optimizer, is } from "@electron-toolkit/utils";
 
-function createWindow(): void {
+const getIconPath = (): string => {
+	const path = join(__dirname, "../../resources/icon.png");
+	return path;
+};
+
+const createWindow = (): BrowserWindow => {
 	// Create the browser window.
 	const mainWindow = new BrowserWindow({
-		width: 900,
-		height: 670,
+		width: 1400,
+		height: 900,
 		show: false,
+		icon: getIconPath(),
 		autoHideMenuBar: true,
 		webPreferences: {
 			preload: join(__dirname, "../preload/index.js"),
 			sandbox: false,
+			nodeIntegration: false,
+			contextIsolation: true,
 		},
 	});
 
@@ -31,7 +39,9 @@ function createWindow(): void {
 	} else {
 		mainWindow.loadFile(join(__dirname, "../renderer/index.html"));
 	}
-}
+
+	return mainWindow;
+};
 
 // This method will be called when Electron has finished
 // initialization and is ready to create browser windows.
@@ -39,6 +49,11 @@ function createWindow(): void {
 app.whenReady().then(() => {
 	// Set app user model id for windows
 	electronApp.setAppUserModelId("com.electron");
+
+	// Set Dock icon for macOS
+	if (process.platform === "darwin") {
+		app.dock?.setIcon(getIconPath());
+	}
 
 	// Default open or close DevTools by F12 in development
 	// and ignore CommandOrControl + R in production.
