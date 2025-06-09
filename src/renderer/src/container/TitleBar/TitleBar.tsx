@@ -138,21 +138,26 @@ const RightSection = styled.div`
 
 const WindowControls = styled.div`
 	display: flex;
-	gap: 8px;
+	gap: 0.5rem;
+
 	-webkit-app-region: no-drag;
 `;
 
 const WindowButton = styled.button<{ $isClose?: boolean }>`
 	border: none;
+	border-radius: 0.25rem;
 	background: transparent;
-	padding: 4px 8px;
+	padding: 0.25rem;
+
 	display: flex;
 	align-items: center;
 	justify-content: center;
+
 	color: ${(props) => (props.theme === "dark" ? "#000000" : "#ffffff")};
 	cursor: pointer;
+	font-size: 0.75rem;
 
 	&:hover {
-		background-color: ${(props) => (props.$isClose ? "#ff4d4f" : "rgba(255, 255, 255, 0.1)")};
+		background-color: ${(props) => (props.$isClose ? "#ff4d4f" : "#ffffff19")};
 	}
 `;
