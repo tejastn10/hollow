@@ -21,7 +21,7 @@ const StatusBar: FC = () => {
 			</LeftSection>
 			<RightSection>
 				<Text>{getNetworkStatusText(networkStatus)}</Text>
-				<Badge dot color={getNetworkStatusColor(networkStatus)} offset={[-2, 0]}>
+				<Badge dot color={getNetworkStatusColor(networkStatus)} offset={[2, 2]}>
 					<WifiOutlined />
 				</Badge>
 			</RightSection>
@@ -37,7 +37,7 @@ const StatusBarContainer = styled.div`
 	align-items: center;
 
 	width: 100%;
-	height: 1.25rem;
+	height: 2.25rem;
 
 	background-color: ${(props) => (props.theme === "dark" ? "#ffffff" : "#000000")};
 	color: ${(props) => (props.theme === "dark" ? "#000000" : "#ffffff")};
