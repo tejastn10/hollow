@@ -1,6 +1,8 @@
 import { FC } from "react";
 
-import { Typography } from "antd";
+import logo from "../../assets/electron.svg";
+
+import { Typography, Image } from "antd";
 import { MinusOutlined, CloseOutlined, BorderOutlined } from "@ant-design/icons";
 
 import styled from "styled-components";
@@ -25,7 +27,8 @@ const TitleBar: FC = () => {
 	return (
 		<TitleBarContainer $isMac={isMac}>
 			<LeftSection>
-				<Text>Left Section</Text>
+				<LogoImage src={logo} alt="Logo" height={20} />
+				<Text>Hollow</Text>
 			</LeftSection>
 			<CenterSection>
 				<Text>Center Section</Text>
@@ -84,7 +87,7 @@ const TitleBarContainer = styled.div<{ $isMac?: boolean }>`
 			}
 
 			& > div:nth-child(2) {
-			margin-left: -10rem;
+			margin-left: -8rem;
 			margin-right: auto;
 			}
 
@@ -98,13 +101,20 @@ const LeftSection = styled.div`
 	display: flex;
 	justify-content: flex-start;
 	align-items: center;
-	gap: 1rem;
+	gap: 0.5rem;
 
 	padding: 0 1rem;
 
 	span {
 		color: ${(props) => (props.theme === "dark" ? "#000000" : "#ffffff")} !important;
+		font-weight: 900;
 	}
+`;
+
+const LogoImage = styled(Image)`
+	display: flex;
+	align-items: center;
+	justify-content: center;
 `;
 
 const CenterSection = styled.div`
@@ -124,7 +134,7 @@ const RightSection = styled.div`
 		display: flex;
 		justify-content: flex-end;
 		align-items: center;
-		gap: 1rem;
+		gap: 0.5rem;
 
 		padding: 0 1rem;
 
