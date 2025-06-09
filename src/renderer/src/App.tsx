@@ -3,9 +3,11 @@ import { FC } from "react";
 import { App as AntdApp, Button } from "antd";
 
 import { ThemeProvider } from "./theme/ThemeProvider";
-import { StatusBar } from "./container/StatusBar";
 
 import styled from "styled-components";
+
+import { StatusBar } from "./container/StatusBar/StatusBar";
+import { TitleBar } from "./container/TitleBar/TitleBar";
 
 const App: FC = () => {
 	const ipcHandle = (): void => window.electron.ipcRenderer.send("ping");
@@ -15,6 +17,7 @@ const App: FC = () => {
 			<ThemeProvider>
 				<AntdApp>
 					<AppContainer>
+						<TitleBar />
 						<Button type="primary" onClick={ipcHandle}>
 							Ping
 						</Button>
