@@ -15,7 +15,8 @@ const createWindow = (): BrowserWindow => {
 		show: false,
 		icon: getIconPath(),
 		autoHideMenuBar: true,
-		titleBarStyle: process.platform === "darwin" ? "hiddenInset" : "default",
+		frame: false,
+		titleBarStyle: process.platform === "darwin" ? "hiddenInset" : "hidden",
 		webPreferences: {
 			preload: join(__dirname, "../preload/index.js"),
 			sandbox: false,

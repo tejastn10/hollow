@@ -1,6 +1,7 @@
 import { FC } from "react";
 
 import { Typography } from "antd";
+import { MinusOutlined, CloseOutlined, BorderOutlined } from "@ant-design/icons";
 
 import styled from "styled-components";
 
@@ -8,6 +9,18 @@ const { Text } = Typography;
 
 const TitleBar: FC = () => {
 	const isMac = navigator.userAgent.includes("Macintosh");
+
+	const handleMinimize = () => {
+		console.log("Minimize button clicked");
+	};
+
+	const handleMaximize = () => {
+		console.log("Maximize button clicked");
+	};
+
+	const handleClose = () => {
+		console.log("Close button clicked");
+	};
 
 	return (
 		<TitleBarContainer $isMac={isMac}>
@@ -18,7 +31,19 @@ const TitleBar: FC = () => {
 				<Text>Center Section</Text>
 			</CenterSection>
 			<RightSection>
-				<Text>Right Section</Text>
+				{!isMac && (
+					<WindowControls>
+						<WindowButton onClick={handleMinimize}>
+							<MinusOutlined />
+						</WindowButton>
+						<WindowButton onClick={handleMaximize}>
+							<BorderOutlined />
+						</WindowButton>
+						<WindowButton $isClose onClick={handleClose}>
+							<CloseOutlined />
+						</WindowButton>
+					</WindowControls>
+				)}
 			</RightSection>
 		</TitleBarContainer>
 	);
@@ -59,7 +84,7 @@ const TitleBarContainer = styled.div<{ $isMac?: boolean }>`
 			}
 
 			& > div:nth-child(2) {
-			margin-left: -5rem;
+			margin-left: -10rem;
 			margin-right: auto;
 			}
 
@@ -108,5 +133,26 @@ const RightSection = styled.div`
 		span {
 			color: ${(props) => (props.theme === "dark" ? "#000000" : "#ffffff")} !important;
 		}
+	}
+`;
+
+const WindowControls = styled.div`
+	display: flex;
+	gap: 8px;
+	-webkit-app-region: no-drag;
+`;
+
+const WindowButton = styled.button<{ $isClose?: boolean }>`
+	border: none;
+	background: transparent;
+	padding: 4px 8px;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	color: ${(props) => (props.theme === "dark" ? "#000000" : "#ffffff")};
+	cursor: pointer;
+
+	&:hover {
+		background-color: ${(props) => (props.$isClose ? "#ff4d4f" : "rgba(255, 255, 255, 0.1)")};
 	}
 `;
