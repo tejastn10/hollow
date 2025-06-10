@@ -62,11 +62,8 @@ const TitleBarContainer = styled.div<{ $isMac?: boolean }>`
 	width: 100%;
 	height: 2.25rem;
 
-	background-color: ${(props) => (props.theme === "dark" ? "#ffffff" : "#000000")};
-	color: ${(props) => (props.theme === "dark" ? "#000000" : "#ffffff")};
-
 	border-bottom: ${(props) =>
-		props.theme === "dark" ? "1px solid #333333" : "1px solid #e0e0e0e"};
+		props.theme !== "dark" ? "1px solid #333333" : "1px solid #e0e0e0e"};
 	padding: 0 1rem;
 
 	user-select: none;
@@ -104,11 +101,6 @@ const LeftSection = styled.div`
 	gap: 0.5rem;
 
 	padding: 0 1rem;
-
-	span {
-		color: ${(props) => (props.theme === "dark" ? "#000000" : "#ffffff")} !important;
-		font-weight: 900;
-	}
 `;
 
 const LogoImage = styled(Image)`
@@ -123,10 +115,6 @@ const CenterSection = styled.div`
 	align-items: center;
 
 	flex-grow: 1;
-
-	span {
-		color: ${(props) => (props.theme === "dark" ? "#000000" : "#ffffff")} !important;
-	}
 `;
 
 const RightSection = styled.div`
@@ -139,10 +127,6 @@ const RightSection = styled.div`
 		padding: 0 1rem;
 
 		text-transform: capitalize;
-
-		span {
-			color: ${(props) => (props.theme === "dark" ? "#000000" : "#ffffff")} !important;
-		}
 	}
 `;
 
@@ -163,7 +147,6 @@ const WindowButton = styled.button<{ $isClose?: boolean }>`
 	align-items: center;
 	justify-content: center;
 
-	color: ${(props) => (props.theme === "dark" ? "#000000" : "#ffffff")};
 	cursor: pointer;
 	font-size: 0.75rem;
 

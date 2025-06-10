@@ -39,10 +39,7 @@ const StatusBarContainer = styled.div`
 	width: 100%;
 	height: 2.25rem;
 
-	background-color: ${(props) => (props.theme === "dark" ? "#ffffff" : "#000000")};
-	color: ${(props) => (props.theme === "dark" ? "#000000" : "#ffffff")};
-
-	border-top: ${(props) => (props.theme === "dark" ? "1px solid #333333" : "1px solid #e0e0e0e")};
+	border-top: ${(props) => (props.theme !== "dark" ? "1px solid #333333" : "1px solid #e0e0e0e")};
 	padding: 0 1rem;
 `;
 
@@ -53,10 +50,6 @@ const LeftSection = styled.div`
 	gap: 1rem;
 
 	padding: 0 1rem;
-
-	span {
-		color: ${(props) => (props.theme === "dark" ? "#000000" : "#ffffff")} !important;
-	}
 `;
 
 const RightSection = styled.div`
@@ -69,9 +62,5 @@ const RightSection = styled.div`
 		padding: 0 1rem;
 
 		text-transform: capitalize;
-
-		span {
-			color: ${(props) => (props.theme === "dark" ? "#000000" : "#ffffff")} !important;
-		}
 	}
 `;
