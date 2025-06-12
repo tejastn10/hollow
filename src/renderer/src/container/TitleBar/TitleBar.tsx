@@ -13,15 +13,15 @@ const TitleBar: FC = () => {
 	const isMac = navigator.userAgent.includes("Macintosh");
 
 	const handleMinimize = () => {
-		console.log("Minimize button clicked");
+		window.api?.minimizeWindow();
 	};
 
 	const handleMaximize = () => {
-		console.log("Maximize button clicked");
+		window.api?.maximizeWindow();
 	};
 
 	const handleClose = () => {
-		console.log("Close button clicked");
+		window.api?.closeWindow();
 	};
 
 	return (

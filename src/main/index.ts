@@ -45,6 +45,34 @@ const createWindow = (): BrowserWindow => {
 	return mainWindow;
 };
 
+// ? Handlers
+ipcMain.handle("minimize-window", () => {
+	const mainWindow = BrowserWindow.getAllWindows()[0];
+
+	if (mainWindow) {
+		mainWindow.minimize();
+	}
+});
+
+ipcMain.handle("maximize-window", () => {
+	const mainWindow = BrowserWindow.getAllWindows()[0];
+	if (mainWindow) {
+		if (mainWindow.isMaximized()) {
+			mainWindow.unmaximize();
+		} else {
+			mainWindow.maximize();
+		}
+	}
+});
+
+ipcMain.handle("close-window", () => {
+	const mainWindow = BrowserWindow.getAllWindows()[0];
+
+	if (mainWindow) {
+		mainWindow.close();
+	}
+});
+
 // This method will be called when Electron has finished
 // initialization and is ready to create browser windows.
 // Some APIs can only be used after this event occurs.
