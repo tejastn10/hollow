@@ -1,4 +1,4 @@
-import { FC, PropsWithChildren, useState, createContext, useContext } from "react";
+import { FC, PropsWithChildren, useState, createContext } from "react";
 import { ConfigProvider, ThemeConfig } from "antd";
 
 import { LightThemeProvider, DarkThemeProvider } from "./provider";
@@ -26,10 +26,4 @@ const ThemeProvider: FC<PropsWithChildren> = ({ children }) => {
 	);
 };
 
-// Custom Hook to Use Theme Context
-const useTheme = (): {
-	theme: string;
-	toggleTheme: () => void;
-} => useContext(ThemeContext);
-
-export { ThemeProvider, useTheme };
+export { ThemeContext, ThemeProvider };
