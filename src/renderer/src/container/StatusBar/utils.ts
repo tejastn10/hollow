@@ -1,6 +1,6 @@
-import { NetworkStatus } from "../types/network";
+import { NetworkStatus } from "../../types/network";
 
-import { NETWORK_STATUS } from "../constants/network";
+import { NETWORK_STATUS } from "../../constants/network";
 
 const getNetworkStatusText = (status: NetworkStatus): string => {
 	switch (status) {

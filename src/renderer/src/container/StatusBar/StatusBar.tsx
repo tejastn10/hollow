@@ -5,7 +5,7 @@ import { WifiOutlined } from "@ant-design/icons";
 
 import styled from "styled-components";
 
-import { getNetworkStatusColor, getNetworkStatusText } from "../utils";
+import { getNetworkStatusColor, getNetworkStatusText } from "./utils";
 
 import { useNetworkStatus } from "../../hooks/useNetworkStatus";
 
