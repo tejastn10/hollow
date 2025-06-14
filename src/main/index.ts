@@ -46,6 +46,8 @@ const createWindow = (): BrowserWindow => {
 };
 
 // ? Handlers
+
+// * Window handlers
 ipcMain.handle("minimize-window", () => {
 	const mainWindow = BrowserWindow.getAllWindows()[0];
 
@@ -92,16 +94,17 @@ app.whenReady().then(() => {
 		optimizer.watchWindowShortcuts(window);
 	});
 
-	// IPC test
-	ipcMain.on("ping", () => console.log("pong"));
-
 	createWindow();
 
 	app.on("activate", function () {
 		// On macOS it's common to re-create a window in the app when the
 		// dock icon is clicked and there are no other windows open.
-		if (BrowserWindow.getAllWindows().length === 0) createWindow();
+		if (BrowserWindow.getAllWindows().length === 0) {
+			createWindow();
+		}
 	});
+
+	app.on("before-quit", () => {});
 });
 
 // Quit when all windows are closed, except on macOS. There, it's common
