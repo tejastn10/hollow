@@ -1,4 +1,4 @@
-import { FC } from "react";
+import { FC, useState } from "react";
 
 import { App as AntdApp, Button } from "antd";
 
@@ -8,9 +8,30 @@ import styled from "styled-components";
 
 import { StatusBar } from "./container/StatusBar/StatusBar";
 import { TitleBar } from "./container/TitleBar/TitleBar";
+import { PermissionModal } from "./container/PermissionModal/PermissionModal";
 
 const App: FC = () => {
-	const ipcHandle = (): void => window.electron.ipcRenderer.send("ping");
+	const [isModalVisible, setIsModalVisible] = useState(false);
+	const [passwordErrorMessage, setPasswordErrorMessage] = useState<string | undefined>();
+
+	const handleModalVisibility = () => {
+		setIsModalVisible(!isModalVisible);
+	};
+
+	const handlePasswordSubmit = (password: string) => {
+		if (window.electron?.ipcRenderer) {
+			window.electron.ipcRenderer.send("password-response", password);
+		}
+	};
+
+	const handlePasswordCancel = () => {
+		if (window.electron?.ipcRenderer) {
+			window.electron.ipcRenderer.send("password-response", null);
+		}
+
+		setIsModalVisible(false);
+		setPasswordErrorMessage(undefined);
+	};
 
 	return (
 		<>
@@ -18,9 +39,15 @@ const App: FC = () => {
 				<AntdApp>
 					<AppContainer>
 						<TitleBar />
-						<Button type="primary" onClick={ipcHandle}>
+						<Button type="primary" onClick={handleModalVisibility}>
 							Ping
 						</Button>
+						<PermissionModal
+							visible={isModalVisible}
+							onSubmit={handlePasswordSubmit}
+							onCancel={handlePasswordCancel}
+							errorMessage={passwordErrorMessage}
+						/>
 						<StatusBar />
 					</AppContainer>
 				</AntdApp>
