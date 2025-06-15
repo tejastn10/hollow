@@ -1,9 +1,21 @@
 {
 	"extends": "@electron-toolkit/tsconfig/tsconfig.web.json",
 	"include": [
-		"src/**/*.ts",
-		"vite.config.ts",
-		"eslint.config.mjs",
+	    // Renderer specific
+			"src/renderer/src/**/*",
+			"src/renderer/src/env.d.ts",
+			"src/renderer/src/**/*.tsx",
+			
+			// Preload specific
+			"src/preload/**/*.ts",
+			"src/preload/*.d.ts",
+			
+			// Main process
+			"src/main/**/*.ts",
+			
+			// Config files
+			"vite.config.ts",
+			"eslint.config.mjs"
 	],
 	"compilerOptions": {
 		"composite": true,
