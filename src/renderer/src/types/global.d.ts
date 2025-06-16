@@ -1,7 +1,11 @@
+import { NetworkInterface } from "./network";
+
 interface HollowApi {
 	closeWindow: () => Promise<void>;
 	maximizeWindow: () => Promise<void>;
 	minimizeWindow: () => Promise<void>;
+
+	getNetworkInterfaces: () => Promise<NetworkInterface[]>;
 }
 
 declare global {
