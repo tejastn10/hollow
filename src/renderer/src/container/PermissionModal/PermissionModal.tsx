@@ -1,6 +1,6 @@
-import { FC, useEffect, useState } from "react";
+import { FC, useEffect, useRef, useState } from "react";
 
-import { App, Form, Input, Modal } from "antd";
+import { App, Form, Input, InputRef, Modal } from "antd";
 
 import { MAX_PASSWORD_ATTEMPTS } from "./constants";
 
@@ -19,8 +19,16 @@ const PermissionModal: FC<Props> = ({ visible, errorMessage, onCancel, onSubmit 
 	const [form] = Form.useForm();
 	const { message } = App.useApp();
 
+	const autoFocusRef = useRef<InputRef>(null);
+
 	const [attempts, setAttempts] = useState(0);
 	const [isProcessing, setIsProcessing] = useState(false);
+
+	const onModalOpen = (open?: boolean): void => {
+		if (open) {
+			autoFocusRef.current?.focus();
+		}
+	};
 
 	const handleCancel = () => {
 		onCancel();
@@ -81,6 +89,7 @@ const PermissionModal: FC<Props> = ({ visible, errorMessage, onCancel, onSubmit 
 			okText="Submit"
 			cancelText="Cancel"
 			destroyOnHidden
+			afterOpenChange={onModalOpen}
 			confirmLoading={isProcessing}
 		>
 			<Form form={form} onFinish={handleSubmit} layout="vertical">
@@ -102,6 +111,7 @@ const PermissionModal: FC<Props> = ({ visible, errorMessage, onCancel, onSubmit 
 				>
 					<Password
 						autoFocus
+						ref={autoFocusRef}
 						onPressEnter={form.submit}
 						placeholder="Enter your password"
 						disabled={attempts >= MAX_PASSWORD_ATTEMPTS}
