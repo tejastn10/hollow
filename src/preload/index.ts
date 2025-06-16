@@ -6,6 +6,8 @@ const api = {
 	closeWindow: () => ipcRenderer.invoke("close-window"),
 	maximizeWindow: () => ipcRenderer.invoke("maximize-window"),
 	minimizeWindow: () => ipcRenderer.invoke("minimize-window"),
+
+	getNetworkInterfaces: () => ipcRenderer.invoke("get-network-interfaces"),
 };
 
 // Use `contextBridge` APIs to expose Electron APIs to
