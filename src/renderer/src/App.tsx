@@ -13,9 +13,13 @@ import { NetworkInterfaceSelector } from "./container/NetworkInterface/NetworkIn
 
 import { PermissionModal } from "./container/PermissionModal/PermissionModal";
 
-const App: FC = () => {
-	const { message } = AntdApp.useApp();
+import { PacketData } from "./types/network";
+import { MAX_PACKETS } from "./constants/network";
 
+const App: FC = () => {
+	const { message: AntMessage } = AntdApp.useApp();
+
+	const [, setPackets] = useState<PacketData[]>([]);
 	const [isCapturing, setIsCapturing] = useState(false);
 	const [isPasswordModalVisible, setIsPasswordModalVisible] = useState(false);
 	const [passwordErrorMessage, setPasswordErrorMessage] = useState<string | undefined>();
@@ -44,17 +48,17 @@ const App: FC = () => {
 			await window.api.stopCapture();
 			setIsCapturing(false);
 
-			message.info("Capture stopped successfully");
+			AntMessage.info("Capture stopped successfully");
 		} catch (error) {
 			console.error(`Error stopping capture: ${JSON.stringify(error, null, 2)}`);
-			message.error("Failed to stop capture");
+			AntMessage.error("Failed to stop capture");
 		}
 	};
 
 	const handleStartCapture = async (interfaceName: string, filter?: string): Promise<void> => {
 		try {
 			if (isCapturing) {
-				message.warning("Capture is already in progress");
+				AntMessage.warning("Capture is already in progress");
 				return;
 			}
 
@@ -62,9 +66,9 @@ const App: FC = () => {
 
 			if (!result.success) {
 				if (result.error) {
-					message.error(`Capture failed: ${result.error}`);
+					AntMessage.error(`Capture failed: ${result.error}`);
 				} else {
-					message.error("Capture failed for an unknown reason");
+					AntMessage.error("Capture failed for an unknown reason");
 				}
 
 				setIsCapturing(false);
@@ -73,16 +77,81 @@ const App: FC = () => {
 
 			setIsCapturing(true);
 
-			message.success(`Capture started on ${interfaceName}`);
+			AntMessage.success(`Capture started on ${interfaceName}`);
 		} catch (error) {
 			console.error(`Error starting capture: ${JSON.stringify(error, null, 2)}`);
-			message.error("Failed to start capture");
+			AntMessage.error("Failed to start capture");
 
 			setIsCapturing(false);
 		}
 	};
 
-	useEffect(() => {}, [isPasswordModalVisible]);
+	useEffect(() => {
+		// ? Listen for captured packets
+		window.api.onPacketCaptured((packet: PacketData) => {
+			try {
+				setPackets((prevPackets) => {
+					const newPackets = [...prevPackets, packet];
+
+					// Limit the number of packets to 1000
+					if (newPackets.length > MAX_PACKETS) {
+						return newPackets.slice(-MAX_PACKETS);
+					}
+					return newPackets;
+				});
+			} catch (error) {
+				console.error(`Error processing captured packet: ${JSON.stringify(error, null, 2)}`);
+			}
+		});
+
+		// ? Listen for capture status updates if the API supports it
+		if (window.api?.onCaptureStatus) {
+			window.api.onCaptureStatus(({ status, message }: { status: string; message: string }) => {
+				console.log(`Capture status: ${status}`);
+
+				switch (status) {
+					case "requesting-password":
+						setIsPasswordModalVisible(true);
+						setPasswordErrorMessage(undefined);
+						break;
+
+					case "started":
+						setIsPasswordModalVisible(false);
+						setPasswordErrorMessage(undefined);
+
+						AntMessage.success("Capture started successfully");
+						break;
+					case "password-error":
+						setPasswordErrorMessage(
+							message || "An error occurred while processing the password. Please try again."
+						);
+						break;
+
+					default:
+						break;
+				}
+			});
+		}
+
+		const handlePasswordRequest = () => {
+			if (isPasswordModalVisible) {
+				return;
+			}
+
+			setIsPasswordModalVisible(true);
+			setPasswordErrorMessage(undefined);
+		};
+
+		if (window.electron?.ipcRenderer) {
+			window.electron.ipcRenderer.on("request-password", handlePasswordRequest);
+		}
+
+		return () => {
+			if (window.electron?.ipcRenderer) {
+				window.electron.ipcRenderer.removeListener("request-password", handlePasswordRequest);
+			}
+		};
+	}, [isPasswordModalVisible, AntMessage]);
 
 	return (
 		<>
