@@ -8,6 +8,9 @@ import styled from "styled-components";
 
 import { StatusBar } from "./container/StatusBar/StatusBar";
 import { TitleBar } from "./container/TitleBar/TitleBar";
+
+import { NetworkInterfaceSelector } from "./container/NetworkInterface/NetworkInterfaceSelector";
+
 import { PermissionModal } from "./container/PermissionModal/PermissionModal";
 
 const App: FC = () => {
@@ -39,6 +42,17 @@ const App: FC = () => {
 				<AntdApp>
 					<AppContainer>
 						<TitleBar />
+
+						<MainContent>
+							<ControlPanel>
+								<NetworkInterfaceSelector
+									isCapturing={false}
+									onStopCapture={() => {}}
+									onStartCapture={() => {}}
+								/>
+							</ControlPanel>
+						</MainContent>
+
 						<Button type="primary" onClick={handleModalVisibility}>
 							Ping
 						</Button>
@@ -71,4 +85,24 @@ const AppContainer = styled.div`
 	width: 100vw;
 
 	overflow: hidden;
+`;
+
+const MainContent = styled.div`
+	display: flex;
+	flex-direction: column;
+	width: 100%;
+
+	flex: 1;
+	overflow: hidden;
+`;
+
+const ControlPanel = styled.div`
+	padding: 1rem;
+
+	display: flex;
+	flex-direction: column;
+
+	gap: 1rem;
+
+	border-bottom: 1px solid ${(props) => (props.theme === "dark" ? "#333333" : "#e0e0e0")};
 `;
