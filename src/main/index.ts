@@ -1,11 +1,67 @@
 import { app, shell, BrowserWindow, ipcMain } from "electron";
 import { join } from "path";
+import { networkInterfaces } from "os";
 
 import { electronApp, optimizer, is } from "@electron-toolkit/utils";
+import { NetworkInterface } from "@renderer/types/network";
+
+import { INTERFACE_MAPPING } from "./constants";
 
 const getIconPath = (): string => {
 	const path = join(__dirname, "../../resources/icon.png");
 	return path;
+};
+
+const getInterfaceDescription = (name: string) => {
+	const platform = process.platform;
+	const mappings = INTERFACE_MAPPING[platform] || [];
+
+	// ? Find the first mapping that matches the interface name
+	const mapping = mappings.find((m) => name.startsWith(m.prefix));
+
+	// * Return formatted description or default to the name
+	return mapping ? `${mapping.description} (${name})` : name;
+};
+
+const getRealNetworkInterfaces = () => {
+	const interfaces = networkInterfaces();
+
+	const result: NetworkInterface[] = [];
+
+	for (const [name, addresses] of Object.entries(interfaces)) {
+		if (addresses) {
+			const filteredAddresses = addresses
+				.filter((addr) => !addr.internal)
+				.map((addr) => ({ addr: addr.address, netmask: addr.netmask, family: addr.family }));
+
+			if (filteredAddresses.length > 0) {
+				result.push({
+					name,
+					description: getInterfaceDescription(name),
+					addresses: filteredAddresses,
+				});
+			}
+		}
+	}
+
+	// ? Add loopback interface if it doesn't exist
+	const loopbackInterface = interfaces["lo0"] || interfaces["lo"] || interfaces["Loopback"];
+	if (
+		loopbackInterface &&
+		!result.some(
+			(iface) => iface.name === "lo0" || iface.name === "lo" || iface.name === "Loopback"
+		)
+	) {
+		result.push({
+			name: process.platform === "win32" ? "lo" : "lo0",
+			description: "Loopback",
+			addresses: loopbackInterface
+				.filter((addr) => !addr.internal && addr.family === "IPv4")
+				.map((addr) => ({ addr: addr.address, netmask: addr.netmask, family: addr.family })),
+		});
+	}
+
+	return result;
 };
 
 const createWindow = (): BrowserWindow => {
@@ -73,6 +129,17 @@ ipcMain.handle("close-window", () => {
 
 	if (mainWindow) {
 		mainWindow.close();
+	}
+});
+
+// * App handlers
+ipcMain.handle("get-network-interfaces", async (): Promise<NetworkInterface[]> => {
+	try {
+		const interfaces = getRealNetworkInterfaces();
+		return interfaces;
+	} catch (error) {
+		console.error(`Error getting network interfaces: ${JSON.stringify(error, null, 2)}`);
+		return [];
 	}
 });
 
