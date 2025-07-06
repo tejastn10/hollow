@@ -12,7 +12,7 @@ interface Props {
 	isCapturing: boolean;
 
 	onStopCapture: () => void;
-	onStartCapture: (interfaceName: string, filter: string) => void;
+	onStartCapture: (interfaceName: string, filter?: string) => void;
 }
 
 const NetworkInterfaceSelector: FC<Props> = ({ isCapturing, onStopCapture, onStartCapture }) => {
