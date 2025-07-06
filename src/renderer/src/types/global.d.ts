@@ -1,11 +1,20 @@
 import { NetworkInterface } from "./network";
 
+interface CaptureResult {
+	success: boolean;
+	error?: string;
+	linkType?: SVGAnimatedNumber;
+}
+
 interface HollowApi {
 	closeWindow: () => Promise<void>;
 	maximizeWindow: () => Promise<void>;
 	minimizeWindow: () => Promise<void>;
 
 	getNetworkInterfaces: () => Promise<NetworkInterface[]>;
+
+	startCapture: (interfaceName: string, filter: string) => Promise<CaptureResult>;
+	stopCapture: () => Promise<void>;
 }
 
 declare global {

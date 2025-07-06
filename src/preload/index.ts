@@ -8,6 +8,10 @@ const api = {
 	minimizeWindow: () => ipcRenderer.invoke("minimize-window"),
 
 	getNetworkInterfaces: () => ipcRenderer.invoke("get-network-interfaces"),
+
+	startCapture: (interfaceName: string, filter: string) =>
+		ipcRenderer.invoke("start-capture", interfaceName, filter),
+	stopCapture: () => ipcRenderer.invoke("stop-capture"),
 };
 
 // Use `contextBridge` APIs to expose Electron APIs to
