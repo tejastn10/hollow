@@ -1,4 +1,4 @@
-import { FC, useState } from "react";
+import { FC, useEffect, useState } from "react";
 
 import { App as AntdApp, Button } from "antd";
 
@@ -14,11 +14,14 @@ import { NetworkInterfaceSelector } from "./container/NetworkInterface/NetworkIn
 import { PermissionModal } from "./container/PermissionModal/PermissionModal";
 
 const App: FC = () => {
-	const [isModalVisible, setIsModalVisible] = useState(false);
+	const { message } = AntdApp.useApp();
+
+	const [isCapturing, setIsCapturing] = useState(false);
+	const [isPasswordModalVisible, setIsPasswordModalVisible] = useState(false);
 	const [passwordErrorMessage, setPasswordErrorMessage] = useState<string | undefined>();
 
-	const handleModalVisibility = () => {
-		setIsModalVisible(!isModalVisible);
+	const handlePasswordModalVisibility = () => {
+		setIsPasswordModalVisible(!isPasswordModalVisible);
 	};
 
 	const handlePasswordSubmit = (password: string) => {
@@ -32,9 +35,54 @@ const App: FC = () => {
 			window.electron.ipcRenderer.send("password-response", null);
 		}
 
-		setIsModalVisible(false);
+		setIsPasswordModalVisible(false);
 		setPasswordErrorMessage(undefined);
 	};
+
+	const handleStopCapture = async (): Promise<void> => {
+		try {
+			await window.api.stopCapture();
+			setIsCapturing(false);
+
+			message.info("Capture stopped successfully");
+		} catch (error) {
+			console.error(`Error stopping capture: ${JSON.stringify(error, null, 2)}`);
+			message.error("Failed to stop capture");
+		}
+	};
+
+	const handleStartCapture = async (interfaceName: string, filter?: string): Promise<void> => {
+		try {
+			if (isCapturing) {
+				message.warning("Capture is already in progress");
+				return;
+			}
+
+			const result = await window.api.startCapture(interfaceName, filter || "");
+
+			if (!result.success) {
+				if (result.error) {
+					message.error(`Capture failed: ${result.error}`);
+				} else {
+					message.error("Capture failed for an unknown reason");
+				}
+
+				setIsCapturing(false);
+				return;
+			}
+
+			setIsCapturing(true);
+
+			message.success(`Capture started on ${interfaceName}`);
+		} catch (error) {
+			console.error(`Error starting capture: ${JSON.stringify(error, null, 2)}`);
+			message.error("Failed to start capture");
+
+			setIsCapturing(false);
+		}
+	};
+
+	useEffect(() => {}, [isPasswordModalVisible]);
 
 	return (
 		<>
@@ -46,18 +94,18 @@ const App: FC = () => {
 						<MainContent>
 							<ControlPanel>
 								<NetworkInterfaceSelector
-									isCapturing={false}
-									onStopCapture={() => {}}
-									onStartCapture={() => {}}
+									isCapturing={isCapturing}
+									onStopCapture={handleStopCapture}
+									onStartCapture={handleStartCapture}
 								/>
 							</ControlPanel>
 						</MainContent>
 
-						<Button type="primary" onClick={handleModalVisibility}>
+						<Button type="primary" onClick={handlePasswordModalVisibility}>
 							Ping
 						</Button>
 						<PermissionModal
-							visible={isModalVisible}
+							visible={isPasswordModalVisible}
 							onSubmit={handlePasswordSubmit}
 							onCancel={handlePasswordCancel}
 							errorMessage={passwordErrorMessage}
