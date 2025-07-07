@@ -13,4 +13,26 @@ interface NetworkInterface {
 	addresses: Array<NetworkAddress>;
 }
 
-export type { NetworkStatus, NetworkInterface, NetworkAddress };
+interface PacketData {
+	timestamp: number;
+
+	data: number[];
+	length: number;
+
+	linkType: string;
+	id?: string;
+}
+
+interface ParsedPacket extends PacketData {
+	id: number;
+
+	time: string;
+	source: string;
+	destination: string;
+	protocol: string;
+
+	info: string;
+	size: number;
+}
+
+export type { NetworkStatus, NetworkInterface, NetworkAddress, PacketData, ParsedPacket };
