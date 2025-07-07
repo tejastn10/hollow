@@ -1,4 +1,4 @@
-import { NetworkInterface } from "./network";
+import { NetworkInterface, PacketData } from "./network";
 
 interface CaptureResult {
 	success: boolean;
@@ -15,6 +15,11 @@ interface HollowApi {
 
 	startCapture: (interfaceName: string, filter: string) => Promise<CaptureResult>;
 	stopCapture: () => Promise<void>;
+
+	onPacketCaptured: (callback: (packet: PacketData) => void) => void;
+	onCaptureStatus: (
+		callback: ({ status, message }: { status: string; message: string }) => void
+	) => void;
 }
 
 declare global {
