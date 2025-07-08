@@ -45,6 +45,7 @@ const PermissionModal: FC<Props> = ({ visible, errorMessage, onCancel, onSubmit 
 
 			if (password) {
 				onSubmit(password);
+				return;
 			}
 
 			throw new Error("No password detected!");
