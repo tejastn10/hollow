@@ -18,10 +18,10 @@ const useNetworkStatus = (): NetworkStatus => {
 			}
 
 			if (navigator.onLine) {
-				console.log("Network is connected");
+				console.debug("Network is connected");
 				setStatus(NETWORK_STATUS.CONNECTED);
 			} else {
-				console.log("Network is weak");
+				console.debug("Network is weak");
 				setStatus(NETWORK_STATUS.WEAK);
 			}
 		};
