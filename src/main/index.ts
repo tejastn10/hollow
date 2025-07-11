@@ -4,10 +4,9 @@ import { networkInterfaces } from "os";
 import { spawn, type ChildProcess } from "child_process";
 
 import { electronApp, optimizer, is } from "@electron-toolkit/utils";
-import { NetworkInterface, ParsedPacket } from "@renderer/types/network";
+import { NetworkInterface, PacketData } from "@renderer/types/network";
 
 import { INTERFACE_MAPPING } from "./constants";
-import { MAX_PACKETS_PER_BATCH } from "@renderer/constants/network";
 
 // ? Network Capture variables
 let captureProcess: ChildProcess | undefined | null = null;
@@ -108,8 +107,261 @@ const createWindow = (): BrowserWindow => {
 	return mainWindow;
 };
 
-const parseTextPacket = (text: string, id: number): ParsedPacket | null => {
-	return null;
+const createSimplePacket = ({
+	srcIP,
+	dstIP,
+	srcPort,
+	dstPort,
+	protocol,
+	length,
+	id,
+}: {
+	srcIP: string;
+	dstIP: string;
+	protocol: string;
+	length: number;
+	id: number;
+	srcPort?: number;
+	dstPort?: number;
+}): PacketData => {
+	// Create a simplified packet structure
+	const packet: number[] = [];
+
+	// Ethernet header (14 bytes)
+	packet.push(0x00, 0x1a, 0x2b, 0x3c, 0x4d, 0x5e); // Dst MAC
+	packet.push(0x00, 0x1b, 0x2c, 0x3d, 0x4e, 0x5f); // Src MAC
+	packet.push(0x08, 0x00); // EtherType (IPv4)
+
+	// IP header (20 bytes) - simplified for both IPv4 and IPv6
+	let srcBytes: number[];
+	let dstBytes: number[];
+
+	// Check if it's IPv6 (contains colons) or IPv4
+	if (srcIP.includes(":")) {
+		// IPv6 - use simplified representation
+		// Take last 4 segments and convert to bytes for display purposes
+		const srcParts = srcIP.split(":").slice(-2);
+		const dstParts = dstIP.split(":").slice(-2);
+
+		// Convert hex segments to bytes (simplified)
+		srcBytes = srcParts.flatMap((part) => {
+			const num = parseInt(part || "0", 16);
+			return [(num >> 8) & 0xff, num & 0xff];
+		});
+
+		dstBytes = dstParts.flatMap((part) => {
+			const num = parseInt(part || "0", 16);
+			return [(num >> 8) & 0xff, num & 0xff];
+		});
+
+		// Pad to 4 bytes
+		while (srcBytes.length < 4) srcBytes.push(0);
+		while (dstBytes.length < 4) dstBytes.push(0);
+		srcBytes = srcBytes.slice(0, 4);
+		dstBytes = dstBytes.slice(0, 4);
+	} else {
+		// IPv4
+		srcBytes = srcIP.split(".").map((n) => parseInt(n) || 0);
+		dstBytes = dstIP.split(".").map((n) => parseInt(n) || 0);
+
+		// Ensure we have 4 bytes
+		while (srcBytes.length < 4) srcBytes.push(0);
+		while (dstBytes.length < 4) dstBytes.push(0);
+		srcBytes = srcBytes.slice(0, 4);
+		dstBytes = dstBytes.slice(0, 4);
+	}
+
+	packet.push(0x45, 0x00); // Version + IHL, ToS
+	packet.push((length >> 8) & 0xff, length & 0xff); // Total length
+	packet.push(0x00, 0x00, 0x40, 0x00); // ID, Flags + Fragment
+	packet.push(64); // TTL
+
+	// Protocol
+	let ipProtocol = 6; // TCP
+	if (protocol === "UDP" || protocol === "DNS") ipProtocol = 17;
+	else if (protocol === "ICMP") ipProtocol = 1;
+	else if (protocol === "QUIC" || protocol === "HTTP/3") ipProtocol = 17; // QUIC runs over UDP
+	packet.push(ipProtocol);
+
+	packet.push(0x00, 0x00); // Checksum
+	packet.push(...srcBytes); // Source IP
+	packet.push(...dstBytes); // Destination IP
+
+	// Transport header
+	if (
+		(protocol === "TCP" ||
+			protocol === "UDP" ||
+			protocol === "QUIC" ||
+			protocol === "HTTP/3" ||
+			protocol === "HTTPS" ||
+			protocol === "HTTP" ||
+			protocol === "DNS") &&
+		srcPort &&
+		dstPort
+	) {
+		packet.push((srcPort >> 8) & 0xff, srcPort & 0xff);
+		packet.push((dstPort >> 8) & 0xff, dstPort & 0xff);
+
+		if (protocol === "TCP" || protocol === "HTTPS" || protocol === "HTTP") {
+			// TCP header continuation
+			packet.push(0x00, 0x00, 0x00, 0x01); // Seq
+			packet.push(0x00, 0x00, 0x00, 0x01); // Ack
+			packet.push(0x50, 0x18); // Header length + flags
+			packet.push(0x20, 0x00); // Window
+			packet.push(0x00, 0x00, 0x00, 0x00); // Checksum + urgent
+		} else {
+			// UDP header continuation (for UDP, QUIC, HTTP/3, DNS)
+			packet.push(0x00, 0x08); // Length
+			packet.push(0x00, 0x00); // Checksum
+		}
+	}
+
+	// Pad to minimum length
+	while (packet.length < Math.max(60, length)) {
+		packet.push(0x00);
+	}
+
+	return {
+		timestamp: Date.now(),
+		data: packet,
+		length: packet.length,
+		linkType: String(1),
+		id: String(id),
+	};
+};
+
+const parseTextPacket = (line: string, id: number): PacketData | null => {
+	try {
+		if (!line.trim()) {
+			return null;
+		}
+
+		// ? Skip tcp dump status messages
+		if (
+			line.includes("tcpdump:") ||
+			line.includes("listening on") ||
+			line.includes("packets captured") ||
+			line.includes("packets received") ||
+			line.includes("packets dropped") ||
+			line.includes("verbose output suppressed") ||
+			(!line.includes("IP") &&
+				!line.includes("ARP") &&
+				!line.includes("ICMP") &&
+				!line.includes("IP6") &&
+				!line.includes("IPv6"))
+		) {
+			return null;
+		}
+
+		// ? Handle both IPv4 and IPv6 packets
+		let srcIP = "Unknown";
+		let dstIP = "Unknown";
+		let protocol = "Unknown";
+		let srcPort = 0;
+		let dstPort = 0;
+		let length = 64;
+
+		// ? Remove timestamp and extaract the main part
+		const mainPart = line.replace(/^\d{2}:\d{2}:\d{2}\.\d{6} /, "").trim();
+
+		// ? Check if it's IPv6
+		if (mainPart.includes("IP6") || mainPart.includes("IPv6")) {
+			// ? Handle IPv6 QUIC traffic
+			const ipv6QuicMatch = mainPart.match(/^IP6 ([\w:]+)\.(\d+) > ([\w:]+)\.(\d+): (.+)$/);
+			if (ipv6QuicMatch) {
+				srcIP = ipv6QuicMatch[1];
+				srcPort = parseInt(ipv6QuicMatch[2], 10);
+				dstIP = ipv6QuicMatch[3];
+				dstPort = parseInt(ipv6QuicMatch[4], 10);
+				protocol = "QUIC";
+				length = parseInt(ipv6QuicMatch[5], 10) || length;
+			}
+
+			// ? QUIC is typically HTTP/3
+			if (srcPort === 443 || dstPort === 443) {
+				protocol = "HTTP/3";
+			}
+
+			return createSimplePacket({ srcIP, dstIP, srcPort, dstPort, protocol, length, id });
+		}
+
+		// ? Handle IPv6 TCP traffic
+		const ipv6TcpMatch = mainPart.match(
+			/^IP6 ([\w:]+)\\.(\d+) > ([\w:]+)\.(\d+): Flags \[(.+)\], seq (\d+), ack (\d+), length (\d+)$/
+		);
+		if (ipv6TcpMatch) {
+			srcIP = ipv6TcpMatch[1];
+			srcPort = parseInt(ipv6TcpMatch[2], 10);
+			dstIP = ipv6TcpMatch[3];
+			dstPort = parseInt(ipv6TcpMatch[4], 10);
+			length = parseInt(ipv6TcpMatch[8], 10) || length;
+
+			const remainder = ipv6TcpMatch[5];
+
+			// ? Determine protocol from remainder
+			if (remainder.includes("Flags")) {
+				protocol = "TCP";
+
+				// ? Check if HTTP/HTTPS based on ports
+				if (srcPort === 80 || dstPort === 80) {
+					protocol = "HTTP";
+				} else if (srcPort === 443 || dstPort === 443) {
+					protocol = "HTTPS";
+				}
+			} else if (remainder.includes("ICMP")) {
+				protocol = "ICMPv6";
+			} else if (remainder.includes("UDP")) {
+				protocol = "UDP";
+				if (srcPort === 53 || dstPort === 53) {
+					protocol = "DNS";
+				}
+			} else {
+				protocol = "Unknown";
+			}
+			return createSimplePacket({ srcIP, dstIP, srcPort, dstPort, protocol, length, id });
+		} else {
+			// ? Handle IPv4 packets
+			const ipv4Match = mainPart.match(/^IP ([\d.]+)\.(\d+) > ([\d.]+)\.(\d+): (.+)$/);
+			if (ipv4Match) {
+				srcIP = ipv4Match[1];
+				srcPort = parseInt(ipv4Match[2], 10);
+				dstIP = ipv4Match[3];
+				dstPort = parseInt(ipv4Match[4], 10);
+				length = parseInt(ipv4Match[6], 10) || length;
+				const remainder = ipv4Match[5];
+
+				// ? Determine protocol based on remainder
+				if (remainder.includes("Flags")) {
+					protocol = "TCP";
+
+					// ? Check if HTTP/HTTPS based on ports
+					if (srcPort === 80 || dstPort === 80) {
+						protocol = "HTTP";
+					} else if (srcPort === 443 || dstPort === 443) {
+						protocol = "HTTPS";
+					}
+				} else if (remainder.includes("UDP")) {
+					protocol = "UDP";
+					if (srcPort === 53 || dstPort === 53) {
+						protocol = "DNS";
+					}
+				} else if (remainder.includes("ICMP")) {
+					protocol = "ICMP";
+				} else {
+					protocol = "Unknown";
+				}
+
+				return createSimplePacket({ srcIP, dstIP, srcPort, dstPort, protocol, length, id });
+			} else {
+				console.warn(`Unrecognized packet format: ${line}`);
+				return null;
+			}
+		}
+	} catch (error) {
+		console.error(`Error parsing packet line: ${line}`);
+		console.error(`Error details: ${error}`);
+		return null;
+	}
 };
 
 const requestPasswordFromRenderer = (mainWindow: BrowserWindow): Promise<string | null> => {
@@ -240,6 +492,34 @@ const startRealCapture = async (
 
 					// ? Parse TCPDump output (using -l -n for simpler format)
 					captureProcess.stdout.on("data", (data: Buffer) => {
+						if (!privilegedGroup) {
+							privilegedGroup = true;
+							console.log("Capture process started with privileged group.");
+							mainWindow.webContents.send("capture-status", {
+								status: "started",
+								message: "Capture started successfully with privileged group.",
+							});
+						}
+
+						const output = data.toString();
+						const lines = output.split("\n").filter((line) => line.trim());
+
+						let processedCount = 0;
+						const maxPacketsPerBatch = 20;
+						lines?.forEach((line) => {
+							if (line.trim() && processedCount < maxPacketsPerBatch) {
+								const packet = parseTextPacket(line, ++packetId);
+								if (packet) {
+									mainWindow.webContents.send("packet-captured", packet);
+									processedCount++;
+								}
+							}
+						});
+						if (processedCount > 0) {
+							console.log(`Captured ${processedCount} packets in this batch.`);
+						} else {
+							console.warn("No valid packets captured in this batch.");
+						}
 					});
 					captureProcess.stderr.on("data", (data: Buffer) => {
 						const errorMessage = data.toString().trim();
@@ -292,6 +572,7 @@ const startRealCapture = async (
 							// Log other stderr output, but don't treat as error
 							console.log(`tcpdump stderr: ${errorMessage}`);
 						}
+						return undefined;
 					});
 					captureProcess.on("error", (error: Error) => {
 						console.error(`Capture process error: ${error.message}`);
@@ -587,13 +868,24 @@ app.whenReady().then(() => {
 		}
 	});
 
-	app.on("before-quit", () => {});
+	app.on("before-quit", () => {
+		if (captureProcess) {
+			captureProcess.kill("SIGTERM");
+			captureProcess = null;
+			isCapturing = false;
+		}
+	});
 });
 
 // Quit when all windows are closed, except on macOS. There, it's common
 // for applications and their menu bar to stay active until the user quits
 // explicitly with Cmd + Q.
 app.on("window-all-closed", () => {
+	if (captureProcess) {
+		captureProcess.kill("SIGTERM");
+		captureProcess = null;
+		isCapturing = false;
+	}
 	if (process.platform !== "darwin") {
 		app.quit();
 	}
