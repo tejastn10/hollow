@@ -72,7 +72,7 @@ const NetworkInterfaceSelector: FC<Props> = ({ isCapturing, onStopCapture, onSta
 
 	return (
 		<Card>
-			<Title level={4}>Network Capture configuration</Title>
+			<Title level={3}>Network Capture configuration</Title>
 			<ControlsContainer>
 				<InputGroup>
 					<Text strong>Network Interface:</Text>
