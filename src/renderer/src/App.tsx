@@ -1,6 +1,6 @@
 import { FC, useEffect, useState } from "react";
 
-import { App as AntdApp, Button } from "antd";
+import { App as AntdApp } from "antd";
 
 import { ThemeProvider } from "./theme/ThemeProvider";
 
@@ -9,24 +9,24 @@ import styled from "styled-components";
 import { StatusBar } from "./container/StatusBar/StatusBar";
 import { TitleBar } from "./container/TitleBar/TitleBar";
 
+import { PacketList } from "./container/PacketList/PacketList";
+import { PacketDetails } from "./container/PacketDetails/PacketDetails";
+
 import { NetworkInterfaceSelector } from "./container/NetworkInterface/NetworkInterfaceSelector";
 
 import { PermissionModal } from "./container/PermissionModal/PermissionModal";
 
-import { PacketData } from "./types/network";
+import { PacketData, ParsedPacket } from "./types/network";
 import { MAX_PACKETS } from "./constants/network";
 
 const App: FC = () => {
 	const { message: AntMessage } = AntdApp.useApp();
 
-	const [, setPackets] = useState<PacketData[]>([]);
 	const [isCapturing, setIsCapturing] = useState(false);
+	const [packets, setPackets] = useState<PacketData[]>([]);
+	const [selectedPacket, setSelectedPacket] = useState<ParsedPacket | null>(null);
 	const [isPasswordModalVisible, setIsPasswordModalVisible] = useState(false);
 	const [passwordErrorMessage, setPasswordErrorMessage] = useState<string | undefined>();
-
-	const handlePasswordModalVisibility = () => {
-		setIsPasswordModalVisible(!isPasswordModalVisible);
-	};
 
 	const handlePasswordSubmit = (password: string) => {
 		if (window.electron?.ipcRenderer) {
@@ -86,6 +86,10 @@ const App: FC = () => {
 		}
 	};
 
+	const handlePacketSelect = (packet: ParsedPacket) => {
+		setSelectedPacket(packet);
+	};
+
 	useEffect(() => {
 		// ? Listen for captured packets
 		window.api.onPacketCaptured((packet: PacketData) => {
@@ -120,6 +124,11 @@ const App: FC = () => {
 						setPasswordErrorMessage(undefined);
 
 						AntMessage.success("Capture started successfully");
+						break;
+
+					case "stopped":
+						setIsPasswordModalVisible(false);
+						setPasswordErrorMessage(undefined);
 						break;
 					case "password-error":
 						setPasswordErrorMessage(
@@ -168,11 +177,20 @@ const App: FC = () => {
 									onStartCapture={handleStartCapture}
 								/>
 							</ControlPanel>
+
+							<ContentArea>
+								<PacketSection>
+									<SectionTitle>Captured Packets</SectionTitle>
+									<PacketList packets={packets} onPacketSelect={handlePacketSelect} />
+								</PacketSection>
+
+								<DetailsSection>
+									<SectionTitle>Packet Details</SectionTitle>
+									<PacketDetails packet={selectedPacket} />
+								</DetailsSection>
+							</ContentArea>
 						</MainContent>
 
-						<Button type="primary" onClick={handlePasswordModalVisibility}>
-							Ping
-						</Button>
 						<PermissionModal
 							visible={isPasswordModalVisible}
 							onSubmit={handlePasswordSubmit}
@@ -222,4 +240,34 @@ const ControlPanel = styled.div`
 	gap: 1rem;
 
 	border-bottom: 1px solid ${(props) => (props.theme === "dark" ? "#333333" : "#e0e0e0")};
+`;
+
+const ContentArea = styled.div`
+	flex: 1;
+	display: flex;
+	overflow: hidden;
+`;
+
+const SectionTitle = styled.div`
+	padding: 0.5rem 0;
+	font-size: 1.25rem;
+	font-weight: bold;
+	text-transform: uppercase;
+	letter-spacing: 0.05em;
+`;
+
+const PacketSection = styled.div`
+	flex: 1.75;
+	display: flex;
+	flex-direction: column;
+	overflow: hidden;
+	padding: 1rem;
+`;
+
+const DetailsSection = styled.div`
+	flex: 1;
+	display: flex;
+	flex-direction: column;
+	overflow: hidden;
+	padding: 1rem;
 `;
