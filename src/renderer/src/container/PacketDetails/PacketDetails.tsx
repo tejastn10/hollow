@@ -1,12 +1,13 @@
 import { FC } from "react";
 
-import { Card, Typography, Tabs } from "antd";
+import { Card, Typography, Tabs, Tooltip } from "antd";
 import styled from "styled-components";
 
 import { ParsedPacket } from "@renderer/types/network";
 
+import { getByteInfo } from "./utils";
+
 const { Text, Title } = Typography;
-const { TabPane } = Tabs;
 
 interface Props {
 	packet: ParsedPacket | null;
@@ -30,21 +31,90 @@ const PacketDetails: FC<Props> = ({ packet }) => {
 		for (let i = 0; i < bytes.length; i += 16) {
 			const offset = i.toString(16).padStart(8, "0").toUpperCase();
 			const hexBytes = bytes.slice(i, i + 16);
-			const hex = hexBytes.map((b) => b.toString(16).padStart(2, "0").toUpperCase()).join(" ");
 			const ascii = hexBytes
 				.map((b) => (b >= 32 && b <= 126 ? String.fromCharCode(b) : "."))
 				.join("");
 
+			const coloredHexBytes = hexBytes.map((byte, byteIndex) => {
+				const absoluteIndex = i + byteIndex;
+				const info = getByteInfo(absoluteIndex);
+				const hexValue = byte.toString(16).padStart(2, "0").toUpperCase();
+
+				return (
+					<Tooltip
+						key={byteIndex}
+						title={`${info.section}: ${info.desc} (0x${hexValue} = ${byte})`}
+					>
+						<ColoredByte color={info.color}>{hexValue}</ColoredByte>
+					</Tooltip>
+				);
+			});
+
+			while (coloredHexBytes.length < 16) {
+				coloredHexBytes.push(<span key={`pad-${coloredHexBytes.length}`}> </span>);
+			}
+
 			lines.push(
-				<HexLine key={i}>
+				<HexLineEnhanced key={i}>
 					<HexOffset>{offset}</HexOffset>
-					<HexBytes>{hex.padEnd(47, " ")}</HexBytes>
+					<HexBytesContainer>
+						{coloredHexBytes.map((byte, idx) => (
+							<span key={idx}>
+								{byte}
+								{idx < 15 && idx < hexBytes.length - 1 ? " " : ""}
+							</span>
+						))}
+					</HexBytesContainer>
 					<AsciiBytes>{ascii}</AsciiBytes>
-				</HexLine>
+				</HexLineEnhanced>
 			);
 		}
 
-		return <HexDumpContainer>{lines}</HexDumpContainer>;
+		const legend = (
+			<HexLegend>
+				<LegendTitle>📖 What am I looking at?</LegendTitle>
+				<LegendGrid>
+					<LegendItem>
+						<ColoredByte color="#FF6B6B">XX</ColoredByte>
+						<span>Destination MAC - Where this packet is going on your local network</span>
+					</LegendItem>
+					<LegendItem>
+						<ColoredByte color="#4ECDC4">XX</ColoredByte>
+						<span>Source MAC - Where this packet came from on your local network</span>
+					</LegendItem>
+					<LegendItem>
+						<ColoredByte color="#FFA502">XX</ColoredByte>
+						<span>Source IP - The internet address sending this data</span>
+					</LegendItem>
+					<LegendItem>
+						<ColoredByte color="#3742FA">XX</ColoredByte>
+						<span>Destination IP - The internet address receiving this data</span>
+					</LegendItem>
+					<LegendItem>
+						<ColoredByte color="#F8B500">XX</ColoredByte>
+						<span>Source Port - The app/service sending (like :80 for websites)</span>
+					</LegendItem>
+					<LegendItem>
+						<ColoredByte color="#EB2F06">XX</ColoredByte>
+						<span>Destination Port - The app/service receiving</span>
+					</LegendItem>
+					<LegendItem>
+						<ColoredByte color="#DDD">XX</ColoredByte>
+						<span>Actual Data - The real content being sent (emails, web pages, etc.)</span>
+					</LegendItem>
+				</LegendGrid>
+				<LegendNote>
+					💡 <strong>Tip:</strong> Hover over any byte to see what it represents!
+				</LegendNote>
+			</HexLegend>
+		);
+
+		return (
+			<HexDumpContainer>
+				{legend}
+				<ProtocolTreeContainer>{lines}</ProtocolTreeContainer>
+			</HexDumpContainer>
+		);
 	};
 
 	const renderProtocolTree = () => {
@@ -218,14 +288,21 @@ const PacketDetails: FC<Props> = ({ packet }) => {
 				</PacketInfo>
 			</PacketHeader>
 
-			<StyledTabs defaultActiveKey="1">
-				<TabPane tab="Protocol Tree" key="1">
-					{renderProtocolTree()}
-				</TabPane>
-				<TabPane tab="Hex Dump" key="2">
-					{renderHexDump()}
-				</TabPane>
-			</StyledTabs>
+			<StyledTabs
+				defaultActiveKey="1"
+				items={[
+					{
+						label: "Protocol Tree",
+						key: "1",
+						children: renderProtocolTree(),
+					},
+					{
+						label: "Hex Dump",
+						key: "2",
+						children: renderHexDump(),
+					},
+				]}
+			></StyledTabs>
 		</DetailsContainer>
 	);
 };
@@ -326,24 +403,73 @@ const HexDumpContainer = styled.div`
 	overflow-y: auto;
 `;
 
-const HexLine = styled.div`
+const HexLegend = styled.div`
+	margin-bottom: 1rem;
+	padding: 0.75rem;
+	background: #2d2d2d;
+	border: 0.0625rem solid #3e3e3e;
+	border-radius: 0.25rem;
+`;
+
+const LegendTitle = styled.h4`
+	color: #cccccc;
+	margin-bottom: 0.75rem;
+`;
+
+const LegendGrid = styled.div`
+	display: grid;
+	grid-template-columns: 1fr 2fr;
+	gap: 0.5rem;
+	margin-bottom: 0.75rem;
+`;
+
+const LegendItem = styled.div`
 	display: flex;
-	margin-bottom: 2px;
+	align-items: center;
+	gap: 0.5rem;
+	color: #cccccc;
+	font-size: 0.9em;
+	margin-bottom: 0.25rem;
+`;
+
+const LegendNote = styled.p`
+	font-size: 0.9em;
+	color: #999;
+	margin-bottom: 0;
+	font-style: italic;
+`;
+
+const HexLineEnhanced = styled.div`
+	display: flex;
+	margin-bottom: 0.125rem;
 	line-height: 1.4;
 `;
 
 const HexOffset = styled.span`
 	color: #666;
-	margin-right: 16px;
-	min-width: 80px;
+	margin-right: 1rem;
+	min-width: 5rem;
 `;
 
-const HexBytes = styled.span`
+const HexBytesContainer = styled.span`
 	color: #000000;
-	margin-right: 16px;
-	min-width: 400px;
+	margin-right: 1rem;
+	min-width: 25rem;
 `;
 
 const AsciiBytes = styled.span`
 	color: #cccccc;
+`;
+
+const ColoredByte = styled.span<{ color: string }>`
+	color: ${(props) => props.color};
+	font-weight: 600;
+	background: ${(props) => `${props.color}20`};
+	padding: 0.0625rem 0.1875rem;
+	border-radius: 0.125rem;
+	cursor: help;
+
+	&:hover {
+		background: ${(props) => `${props.color}40`};
+	}
 `;
