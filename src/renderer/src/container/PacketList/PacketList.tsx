@@ -228,7 +228,7 @@ const PacketList: FC<Props> = ({ packets, onPacketSelect }) => {
 				rowKey="id"
 				pagination={false}
 				size="small"
-				scroll={{ y: 1500 }}
+				scroll={{ y: "calc(100% - 2.5rem)" }}
 				rowSelection={{
 					selectedRowKeys,
 					onChange: (keys) => setSelectedRowKeys(keys),
@@ -251,9 +251,31 @@ const PacketListContainer = styled.div`
 
 	display: flex;
 	flex-direction: column;
-	overflow: auto;
+	overflow: hidden;
 
 	border: 1px solid ${(props) => (props.theme === "dark" ? "#333333" : "#e0e0e0")};
+
+	.ant-table,
+	.ant-table-body,
+	.ant-table-wrapper,
+	.ant-table-container,
+	.ant-spin-container,
+	.ant-spin-nested-loading {
+		height: 100%;
+
+		overflow-y: scroll;
+	}
+
+	.ant-table,
+	.ant-table-wrapper {
+		flex: 1;
+		display: flex;
+		flex-direction: column;
+	}
+
+	.ant-table-container {
+		flex: 1;
+	}
 
 	& .ant-table-tbody > tr > td {
 		border-bottom: none;
