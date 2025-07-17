@@ -732,8 +732,6 @@ ipcMain.handle("start-capture", async (_, interfaceName: string, filter: string)
 		const captureArgs = [
 			"-i",
 			interfaceName,
-			"-w",
-			"capture.pcap",
 			"-U", // Unbuffered output
 			"-s",
 			"0", // Capture full packets
