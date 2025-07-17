@@ -505,7 +505,7 @@ const startRealCapture = async (
 						const lines = output.split("\n").filter((line) => line.trim());
 
 						let processedCount = 0;
-						const maxPacketsPerBatch = 20;
+						const maxPacketsPerBatch = 5;
 						lines?.forEach((line) => {
 							if (line.trim() && processedCount < maxPacketsPerBatch) {
 								const packet = parseTextPacket(line, ++packetId);
@@ -732,13 +732,15 @@ ipcMain.handle("start-capture", async (_, interfaceName: string, filter: string)
 		const captureArgs = [
 			"-i",
 			interfaceName,
+			"-n", // Disable DNS resolution
+			"-l", // Make stdout line buffered
 			"-U", // Unbuffered output
 			"-s",
 			"0", // Capture full packets
 		];
 
 		if (filter) {
-			captureArgs.push("-f", filter);
+			captureArgs.push(filter);
 		}
 
 		console.log(`Starting capture on interface: ${interfaceName} with filter: ${filter}`);
