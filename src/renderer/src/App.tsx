@@ -170,25 +170,27 @@ const App: FC = () => {
 						<TitleBar />
 
 						<MainContent>
-							<ControlPanel>
-								<NetworkInterfaceSelector
-									isCapturing={isCapturing}
-									onStopCapture={handleStopCapture}
-									onStartCapture={handleStartCapture}
-								/>
-							</ControlPanel>
+							<LeftSide>
+								<NetworkSection>
+									<SectionTitle>Network Interfaces</SectionTitle>
+									<NetworkInterfaceSelector
+										isCapturing={isCapturing}
+										onStartCapture={handleStartCapture}
+										onStopCapture={handleStopCapture}
+									/>
+								</NetworkSection>
 
-							<ContentArea>
 								<PacketSection>
 									<SectionTitle>Captured Packets</SectionTitle>
 									<PacketList packets={packets} onPacketSelect={handlePacketSelect} />
 								</PacketSection>
-
+							</LeftSide>
+							<RightSide>
 								<DetailsSection>
 									<SectionTitle>Packet Details</SectionTitle>
 									<PacketDetails packet={selectedPacket} />
 								</DetailsSection>
-							</ContentArea>
+							</RightSide>
 						</MainContent>
 
 						<PermissionModal
@@ -224,14 +226,33 @@ const AppContainer = styled.div`
 
 const MainContent = styled.div`
 	display: flex;
-	flex-direction: column;
+	flex-direction: row;
 	width: 100%;
-
-	flex: 1;
+	height: 100%;
 	overflow: hidden;
 `;
 
-const ControlPanel = styled.div`
+const LeftSide = styled.div`
+	display: flex;
+	flex-direction: column;
+
+	width: 65%;
+	min-width: 0;
+
+	overflow: hidden;
+`;
+
+const RightSide = styled.div`
+	display: flex;
+	flex-direction: column;
+
+	width: 35%;
+	min-width: 0;
+	border-left: 1px solid ${(props) => (props.theme === "dark" ? "#333333" : "#e0e0e0")};
+	overflow: hidden;
+`;
+
+const NetworkSection = styled.div`
 	padding: 1rem;
 
 	display: flex;
@@ -240,12 +261,6 @@ const ControlPanel = styled.div`
 	gap: 1rem;
 
 	border-bottom: 1px solid ${(props) => (props.theme === "dark" ? "#333333" : "#e0e0e0")};
-`;
-
-const ContentArea = styled.div`
-	flex: 1;
-	display: flex;
-	overflow: hidden;
 `;
 
 const SectionTitle = styled.div`
@@ -257,7 +272,7 @@ const SectionTitle = styled.div`
 `;
 
 const PacketSection = styled.div`
-	flex: 1.75;
+	flex: 1;
 	display: flex;
 	flex-direction: column;
 	overflow: hidden;
