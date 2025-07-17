@@ -245,7 +245,7 @@ const PacketList: FC<Props> = ({ packets, onPacketSelect }) => {
 export { PacketList };
 
 const PacketListContainer = styled.div`
-	border-radius: 4px;
+	border-radius: 0.25rem;
 
 	height: 100%;
 

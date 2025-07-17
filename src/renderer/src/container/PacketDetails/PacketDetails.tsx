@@ -326,23 +326,23 @@ const EmptyState = styled.div`
 	display: flex;
 	justify-content: center;
 	align-items: center;
-	height: 200px;
+	height: 12.5rem;
 `;
 
 const PacketHeader = styled.div`
-	padding: 16px;
+	padding: 1rem;
 	border-bottom: 1px solid #3e3e3e;
 `;
 
 const PacketInfo = styled.div`
 	display: flex;
-	gap: 24px;
-	margin-top: 12px;
+	gap: 1.5rem;
+	margin-top: 0.75rem;
 `;
 
 const InfoItem = styled.div`
 	display: flex;
-	gap: 8px;
+	gap: 0.5rem;
 	align-items: center;
 `;
 
@@ -353,32 +353,32 @@ const StyledTabs = styled(Tabs)`
 
 	.ant-tabs-nav {
 		margin: 0;
-		padding: 0 16px;
+		padding: 0 1rem;
 	}
 `;
 
 const ProtocolTreeContainer = styled.div`
-	padding: 16px;
+	padding: 1rem;
 `;
 
 const ProtocolLayer = styled.div`
-	margin-bottom: 16px;
-	border: 1px solid #3e3e3e;
-	border-radius: 4px;
+	margin-bottom: 1rem;
+	border: 0.0625rem solid #3e3e3e;
+	border-radius: 0.25rem;
 `;
 
 const LayerTitle = styled.div`
 	background: #383838;
-	padding: 8px 12px;
+	padding: 8px 0.75rem;
 	color: #cccccc;
 	font-weight: 600;
-	border-bottom: 1px solid #3e3e3e;
+	border-bottom: 0.0625rem solid #3e3e3e;
 `;
 
 const LayerField = styled.div`
 	display: flex;
-	padding: 4px 12px;
-	border-bottom: 1px solid #2d2d2d;
+	padding: 0.25rem 0.75rem;
+	border-bottom: 0.0625rem solid #2d2d2d;
 
 	&:last-child {
 		border-bottom: none;
@@ -387,7 +387,7 @@ const LayerField = styled.div`
 
 const FieldName = styled(Text)`
 	color: #000000 !important;
-	min-width: 150px;
+	min-width: 9.375rem;
 	font-weight: 500;
 `;
 
@@ -397,8 +397,10 @@ const FieldValue = styled(Text)`
 `;
 
 const HexDumpContainer = styled.div`
-	padding: 16px;
+	padding: 1rem;
 	font-family: "Courier New", monospace;
+
+	border-radius: 0.5rem;
 	height: 100%;
 	overflow-y: auto;
 `;
