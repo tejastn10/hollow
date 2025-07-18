@@ -2,6 +2,8 @@
 	"name": "hollow",
 	"version": "0.0.0",
 	"main": "./out/main/index.js",
+	"author": "Tejas Nikhar",
+	"description": "Network Packet Analyzer",
 	"scripts": {
 		"format": "prettier --write \"**/*.{js,ts,tsx,md,json,css}\"",
 		"lint": "eslint \"src/**/*.{ts,tsx}\" --fix",
