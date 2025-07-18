@@ -1,10 +1,10 @@
 import { FC, useEffect, useState } from "react";
 
 import { App as AntdApp } from "antd";
+import { ApiOutlined, GroupOutlined, NodeIndexOutlined } from "@ant-design/icons";
+import styled from "styled-components";
 
 import { ThemeProvider } from "./theme/ThemeProvider";
-
-import styled from "styled-components";
 
 import { StatusBar } from "./container/StatusBar/StatusBar";
 import { TitleBar } from "./container/TitleBar/TitleBar";
@@ -172,7 +172,10 @@ const App: FC = () => {
 						<MainContent>
 							<LeftSide>
 								<NetworkSection>
-									<SectionTitle>Network Interfaces</SectionTitle>
+									<SectionTitle>
+										<ApiOutlined style={{ marginRight: "0.5rem" }} />
+										Network Interfaces
+									</SectionTitle>
 									<NetworkInterfaceSelector
 										isCapturing={isCapturing}
 										onStartCapture={handleStartCapture}
@@ -181,13 +184,19 @@ const App: FC = () => {
 								</NetworkSection>
 
 								<PacketSection>
-									<SectionTitle>Captured Packets</SectionTitle>
+									<SectionTitle>
+										<NodeIndexOutlined style={{ marginRight: "0.5rem" }} />
+										Captured Packets
+									</SectionTitle>
 									<PacketList packets={packets} onPacketSelect={handlePacketSelect} />
 								</PacketSection>
 							</LeftSide>
 							<RightSide>
 								<DetailsSection>
-									<SectionTitle>Packet Details</SectionTitle>
+									<SectionTitle>
+										<GroupOutlined style={{ marginRight: "0.5rem" }} />
+										Packet Details
+									</SectionTitle>
 									<PacketDetails packet={selectedPacket} />
 								</DetailsSection>
 							</RightSide>

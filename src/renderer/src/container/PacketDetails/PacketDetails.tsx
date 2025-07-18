@@ -1,6 +1,7 @@
 import { FC } from "react";
 
 import { Card, Typography, Tabs, Tooltip } from "antd";
+import { ApartmentOutlined, BlockOutlined } from "@ant-design/icons";
 import styled from "styled-components";
 
 import { ParsedPacket } from "@renderer/types/network";
@@ -292,13 +293,15 @@ const PacketDetails: FC<Props> = ({ packet }) => {
 				defaultActiveKey="1"
 				items={[
 					{
-						label: "Protocol Tree",
 						key: "1",
+						label: "Protocol Tree",
+						icon: <ApartmentOutlined />,
 						children: renderProtocolTree(),
 					},
 					{
-						label: "Hex Dump",
 						key: "2",
+						label: "Hex Dump",
+						icon: <BlockOutlined />,
 						children: renderHexDump(),
 					},
 				]}

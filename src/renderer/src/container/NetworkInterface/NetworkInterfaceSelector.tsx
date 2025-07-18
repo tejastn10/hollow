@@ -1,7 +1,14 @@
 import { FC, useCallback, useEffect, useState } from "react";
 
 import { App, Button, Card, Input, Select, Typography } from "antd";
-import { PlayCircleOutlined, SettingOutlined, StopOutlined } from "@ant-design/icons";
+import {
+	BlockOutlined,
+	ControlOutlined,
+	FilterOutlined,
+	PlayCircleOutlined,
+	SettingOutlined,
+	StopOutlined,
+} from "@ant-design/icons";
 import styled from "styled-components";
 
 import { NetworkInterface } from "@renderer/types/network";
@@ -72,7 +79,10 @@ const NetworkInterfaceSelector: FC<Props> = ({ isCapturing, onStopCapture, onSta
 
 	return (
 		<Card>
-			<Title level={3}>Network Capture configuration</Title>
+			<Title level={4}>
+				<ControlOutlined style={{ marginRight: "0.5rem" }} />
+				Network Capture configuration
+			</Title>
 			<ControlsContainer>
 				<InputGroup>
 					<Text strong>Network Interface:</Text>
@@ -80,6 +90,7 @@ const NetworkInterfaceSelector: FC<Props> = ({ isCapturing, onStopCapture, onSta
 						loading={isLoading}
 						disabled={isCapturing}
 						value={selectedInterface}
+						prefix={<BlockOutlined />}
 						onChange={(value) => setSelectedInterface(value)}
 						placeholder="Select a network interface"
 						style={{ width: "100%" }}
@@ -95,6 +106,7 @@ const NetworkInterfaceSelector: FC<Props> = ({ isCapturing, onStopCapture, onSta
 					<Input
 						disabled={isCapturing}
 						value={captureFilter}
+						prefix={<FilterOutlined />}
 						onChange={(e) => setCaptureFilter(e.target.value)}
 						placeholder="Enter capture filter (e.g., 'tcp port 80')"
 					/>
