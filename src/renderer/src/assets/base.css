@@ -1,6 +1,10 @@
+@import url("https://fonts.googleapis.com/css2?family=Cherish&family=Outfit&family=Onest:wght@100..900&display=swap");
+
 * {
 	padding: 0;
 	margin: 0;
+
+	user-select: none;
 }
 
 body {
@@ -8,7 +12,9 @@ body {
 
 	line-height: 1.6;
 	font-family:
-		Inter,
+		"Outfit",
+		"Onest",
+		system-ui,
 		-apple-system,
 		BlinkMacSystemFont,
 		"Segoe UI",
@@ -16,8 +22,7 @@ body {
 		Oxygen,
 		Ubuntu,
 		Cantarell,
-		"Fira Sans",
-		"Droid Sans",
+		"Open Sans",
 		"Helvetica Neue",
 		sans-serif;
 

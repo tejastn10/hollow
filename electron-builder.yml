@@ -1,6 +1,7 @@
 appId: com.electron.app
 
 productName: hollow
+icon: build/icon
 directories:
   buildResources: build
 

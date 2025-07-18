@@ -1,0 +1,90 @@
+name: Build and Release DMG
+
+on:
+  push:
+    branches:
+      - main
+    tags:
+      - "v*" # Triggers on version tags like v1.0.0, v2.1.0, etc.
+
+jobs:
+  build-and-release:
+    runs-on: macos-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: "npm"
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build DMG
+        run: npm run build:mac
+        env:
+          # Add any environment variables your build might need
+          CI: true
+
+      - name: Find DMG file
+        id: find_dmg
+        run: |
+          DMG_PATH=$(find dist -name "*.dmg" -type f | head -1)
+          if [ -z "$DMG_PATH" ]; then
+            echo "No DMG file found!"
+            exit 1
+          fi
+          echo "dmg_path=$DMG_PATH" >> $GITHUB_OUTPUT
+          echo "dmg_name=$(basename $DMG_PATH)" >> $GITHUB_OUTPUT
+
+      - name: Get version from package.json
+        id: get_version
+        run: |
+          VERSION=$(node -p "require('./package.json').version")
+          echo "version=$VERSION" >> $GITHUB_OUTPUT
+
+      - name: Create Release and Upload DMG
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name:
+            ${{ github.ref_type == 'tag' && github.ref_name || format('v{0}',
+            steps.get_version.outputs.version) }}
+          name:
+            Release ${{ github.ref_type == 'tag' && github.ref_name || format('v{0}',
+            steps.get_version.outputs.version) }}
+          body: |
+            ## What's Changed
+
+            🚀 **New Release: ${{ steps.get_version.outputs.version }}**
+
+            ### Downloads
+            - **macOS**: Download the `.dmg` file below
+
+            ### Installation
+            1. Download the DMG file
+            2. Open the DMG file
+            3. Drag the app to your Applications folder
+
+            ---
+
+            **Full Changelog**: https://github.com/${{ github.repository }}/compare/${{ github.event.before }}...${{ github.sha }}
+          files: ${{ steps.find_dmg.outputs.dmg_path }}
+          draft: false
+          prerelease:
+            ${{ contains(steps.get_version.outputs.version, '-') ||
+            contains(steps.get_version.outputs.version, 'beta') ||
+            contains(steps.get_version.outputs.version, 'alpha') }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.TOKEN }}
+
+      - name: Mark as latest release (if main branch)
+        if: github.ref == 'refs/heads/main'
+        run: |
+          TAG_NAME="${{ github.ref_type == 'tag' && github.ref_name || format('v{0}', steps.get_version.outputs.version) }}"
+          gh release edit "$TAG_NAME" --latest
+        env:
+          GITHUB_TOKEN: ${{ secrets.TOKEN }}

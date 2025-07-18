@@ -83,13 +83,8 @@ const eslintConfig = [
 			semi: "error",
 			quotes: ["error", "double"],
 
-			indent: [
-				"error",
-				"tab",
-				{
-					SwitchCase: 1,
-				},
-			],
+			// ? Disabled as Prettier handles these
+			indent: "off",
 		},
 	},
 ];

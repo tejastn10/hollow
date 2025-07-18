@@ -1,8 +1,34 @@
-import { contextBridge } from "electron";
+import { contextBridge, ipcRenderer } from "electron";
 import { electronAPI } from "@electron-toolkit/preload";
 
+import { PacketData } from "@renderer/types/network";
+
 // Custom APIs for renderer
-const api = {};
+const api = {
+	closeWindow: () => ipcRenderer.invoke("close-window"),
+	maximizeWindow: () => ipcRenderer.invoke("maximize-window"),
+	minimizeWindow: () => ipcRenderer.invoke("minimize-window"),
+
+	getNetworkInterfaces: () => ipcRenderer.invoke("get-network-interfaces"),
+
+	startCapture: (interfaceName: string, filter: string) =>
+		ipcRenderer.invoke("start-capture", interfaceName, filter),
+	stopCapture: () => ipcRenderer.invoke("stop-capture"),
+
+	onPacketCaptured: (callback: (packet: PacketData) => void) => {
+		const handler = (_event: Electron.IpcRendererEvent, packet: PacketData) => {
+			callback(packet);
+		};
+		ipcRenderer.on("packet-captured", handler);
+		return () => ipcRenderer.removeListener("packet-captured", handler);
+	},
+	onCaptureStatus: (callback: (data: { status: string; message: string }) => void) => {
+		ipcRenderer.on("capture-status", (_event, data) => callback(data));
+	},
+
+	// ? Remove listeners
+	removeCaptureStatusListener: () => ipcRenderer.removeAllListeners("capture-status"),
+};
 
 // Use `contextBridge` APIs to expose Electron APIs to
 // renderer only if context isolation is enabled, otherwise

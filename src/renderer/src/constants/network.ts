@@ -1,0 +1,10 @@
+enum NETWORK_STATUS {
+	CONNECTED = "connected",
+	WEAK = "weak",
+	DISCONNECTED = "disconnected",
+}
+
+const MAX_PASSWORD_ATTEMPTS = 3;
+const MAX_PACKETS = 1000;
+
+export { NETWORK_STATUS, MAX_PASSWORD_ATTEMPTS, MAX_PACKETS };
