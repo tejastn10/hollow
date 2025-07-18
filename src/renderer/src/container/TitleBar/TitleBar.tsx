@@ -30,9 +30,6 @@ const TitleBar: FC = () => {
 				<LogoImage src={logo} alt="Logo" height={20} />
 				<Text>Hollow</Text>
 			</LeftSection>
-			<CenterSection>
-				<Text>Center Section</Text>
-			</CenterSection>
 			<RightSection>
 				{!isMac && (
 					<WindowControls>
@@ -107,14 +104,6 @@ const LogoImage = styled(Image)`
 	display: flex;
 	align-items: center;
 	justify-content: center;
-`;
-
-const CenterSection = styled.div`
-	display: flex;
-	justify-content: center;
-	align-items: center;
-
-	flex-grow: 1;
 `;
 
 const RightSection = styled.div`
