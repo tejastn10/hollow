@@ -4,6 +4,10 @@
 
 # Hollow ⧲
 
+<p align="center">
+  <img src="image.png" alt="Hollow App">
+</p>
+
 ![Electron](https://img.shields.io/badge/Electron-Latest-47848F?logo=electron&logoColor=white)
 ![React](https://img.shields.io/badge/React-19%2B-61DAFB?logo=react&logoColor=white)
 ![TypeScript](https://img.shields.io/badge/TypeScript-5%2B-007ACC?logo=typescript&logoColor=white)
