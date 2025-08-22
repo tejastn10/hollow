@@ -14,23 +14,18 @@
 ![Vite](https://img.shields.io/badge/Vite-6%2B-646CFF?logo=vite&logoColor=white)
 ![License](https://img.shields.io/badge/License-MIT-yellow?logo=open-source-initiative&logoColor=white)
 
-**Hollow** is a modern Electron application template with React and TypeScript. Built with
-performance and developer experience in mind, it provides a solid foundation for creating
-cross-platform desktop applications with web technologies.
+**Hollow** is a modern network protocol analyzer and packet sniffer built with Electron, React, and TypeScript. Designed as an alternative to Wireshark, it provides a user-friendly interface for real-time network traffic analysis, packet inspection, and protocol dissection. With performance and developer experience in mind, it offers a modern approach to network monitoring and troubleshooting.
 
 ---
 
 ## Features 🌟
 
-- **Electron Framework**: Build cross-platform desktop apps with JavaScript, HTML, and CSS
-- **React + TypeScript**: Modern frontend development with type safety
-- **Vite-powered**: Enjoy lightning-fast HMR during development
-- **Cross-platform Building**: Easily package for Windows, macOS, and Linux
-- **Developer Experience**:
-  - **ESLint**: Maintain code quality with static analysis
-  - **Prettier**: Keep your codebase consistent with automatic formatting
-  - **Hot Reloading**: See changes instantly during development
-  - **Production Ready**: Optimized build configurations for all platforms
+- **Live Packet Capture**: Real-time capture from network interfaces
+- **Protocol Analysis**: Support for common protocols (TCP, UDP, HTTP, etc.)
+- **Packet Filtering**: Advanced filtering system using display filters
+- **Statistics & Visualization**: Real-time traffic statistics and graphs
+- **Cross-platform Support**: Works on Windows, macOS, and Linux
+- **Modern Interface**: Built with React for smooth user experience
 
 ---
 
