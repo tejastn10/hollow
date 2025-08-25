@@ -1,6 +1,5 @@
-import { FC, useEffect, useRef, useState } from "react";
-
-import { App, Form, Input, InputRef, Modal } from "antd";
+import { App, Form, Input, type InputRef, Modal } from "antd";
+import { type FC, useEffect, useRef, useState } from "react";
 
 import { MAX_PASSWORD_ATTEMPTS } from "./constants";
 

@@ -1,10 +1,8 @@
-import { FC } from "react";
-
-import { Card, Typography, Tabs, Tooltip } from "antd";
 import { ApartmentOutlined, BlockOutlined } from "@ant-design/icons";
+import type { ParsedPacket } from "@renderer/types/network";
+import { Card, Tabs, Tooltip, Typography } from "antd";
+import type { FC } from "react";
 import styled from "styled-components";
-
-import { ParsedPacket } from "@renderer/types/network";
 
 import { getByteInfo } from "./utils";
 
@@ -43,7 +41,7 @@ const PacketDetails: FC<Props> = ({ packet }) => {
 
 				return (
 					<Tooltip
-						key={byteIndex}
+						key={absoluteIndex}
 						title={`${info.section}: ${info.desc} (0x${hexValue} = ${byte})`}
 					>
 						<ColoredByte color={info.color}>{hexValue}</ColoredByte>
@@ -59,12 +57,15 @@ const PacketDetails: FC<Props> = ({ packet }) => {
 				<HexLineEnhanced key={i}>
 					<HexOffset>{offset}</HexOffset>
 					<HexBytesContainer>
-						{coloredHexBytes.map((byte, idx) => (
-							<span key={idx}>
-								{byte}
-								{idx < 15 && idx < hexBytes.length - 1 ? " " : ""}
-							</span>
-						))}
+						{coloredHexBytes.map((byte, idx) => {
+							const absoluteIndex = i + idx;
+							return (
+								<span key={absoluteIndex}>
+									{byte}
+									{idx < 15 && idx < hexBytes.length - 1 ? " " : ""}
+								</span>
+							);
+						})}
 					</HexBytesContainer>
 					<AsciiBytes>{ascii}</AsciiBytes>
 				</HexLineEnhanced>

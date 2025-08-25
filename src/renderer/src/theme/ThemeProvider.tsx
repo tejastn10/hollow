@@ -1,7 +1,7 @@
-import { FC, PropsWithChildren, useState, createContext } from "react";
-import { ConfigProvider, ThemeConfig } from "antd";
+import { ConfigProvider, type ThemeConfig } from "antd";
+import { createContext, type FC, type PropsWithChildren, useState } from "react";
 
-import { LightThemeProvider, DarkThemeProvider } from "./provider";
+import { DarkThemeProvider, LightThemeProvider } from "./provider";
 
 // Context to Share Theme State
 const ThemeContext = createContext({

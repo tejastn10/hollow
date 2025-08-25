@@ -1,8 +1,6 @@
 import { useEffect, useState } from "react";
-
-import { NetworkStatus } from "../types/network";
-
 import { NETWORK_STATUS } from "../constants/network";
+import type { NetworkStatus } from "../types/network";
 
 const useNetworkStatus = (): NetworkStatus => {
 	const [status, setStatus] = useState<NetworkStatus>(NETWORK_STATUS.CONNECTED);

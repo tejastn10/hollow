@@ -1,7 +1,6 @@
-import { contextBridge, ipcRenderer } from "electron";
 import { electronAPI } from "@electron-toolkit/preload";
-
-import { PacketData } from "@renderer/types/network";
+import type { PacketData } from "@renderer/types/network";
+import { contextBridge, ipcRenderer } from "electron";
 
 // Custom APIs for renderer
 const api = {

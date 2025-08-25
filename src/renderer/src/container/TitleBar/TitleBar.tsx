@@ -1,11 +1,8 @@
-import { FC } from "react";
-
-import logo from "../../assets/electron.svg";
-
-import { Typography, Image } from "antd";
-import { MinusOutlined, CloseOutlined, BorderOutlined } from "@ant-design/icons";
-
+import { BorderOutlined, CloseOutlined, MinusOutlined } from "@ant-design/icons";
+import { Image, Typography } from "antd";
+import type { FC } from "react";
 import styled from "styled-components";
+import logo from "../../assets/electron.svg";
 
 const { Text } = Typography;
 

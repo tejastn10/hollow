@@ -1,23 +1,18 @@
-import { FC, useEffect, useState } from "react";
+import { ApiOutlined, GroupOutlined, NodeIndexOutlined } from "@ant-design/icons";
 
 import { App as AntdApp } from "antd";
-import { ApiOutlined, GroupOutlined, NodeIndexOutlined } from "@ant-design/icons";
+import { type FC, useEffect, useState } from "react";
 import styled from "styled-components";
-
-import { ThemeProvider } from "./theme/ThemeProvider";
-
-import { StatusBar } from "./container/StatusBar/StatusBar";
-import { TitleBar } from "./container/TitleBar/TitleBar";
-
-import { PacketList } from "./container/PacketList/PacketList";
+import { MAX_PACKETS } from "./constants/network";
+import { NetworkInterfaceSelector } from "./container/NetworkInterface/NetworkInterfaceSelector";
 import { PacketDetails } from "./container/PacketDetails/PacketDetails";
 
-import { NetworkInterfaceSelector } from "./container/NetworkInterface/NetworkInterfaceSelector";
-
+import { PacketList } from "./container/PacketList/PacketList";
 import { PermissionModal } from "./container/PermissionModal/PermissionModal";
-
-import { PacketData, ParsedPacket } from "./types/network";
-import { MAX_PACKETS } from "./constants/network";
+import { StatusBar } from "./container/StatusBar/StatusBar";
+import { TitleBar } from "./container/TitleBar/TitleBar";
+import { ThemeProvider } from "./theme/ThemeProvider";
+import type { PacketData, ParsedPacket } from "./types/network";
 
 const App: FC = () => {
 	const { message: AntMessage } = AntdApp.useApp();
@@ -163,56 +158,54 @@ const App: FC = () => {
 	}, [isPasswordModalVisible, AntMessage]);
 
 	return (
-		<>
-			<ThemeProvider>
-				<AntdApp>
-					<AppContainer>
-						<TitleBar />
+		<ThemeProvider>
+			<AntdApp>
+				<AppContainer>
+					<TitleBar />
 
-						<MainContent>
-							<LeftSide>
-								<NetworkSection>
-									<SectionTitle>
-										<ApiOutlined style={{ marginRight: "0.5rem" }} />
-										Network Interfaces
-									</SectionTitle>
-									<NetworkInterfaceSelector
-										isCapturing={isCapturing}
-										onStartCapture={handleStartCapture}
-										onStopCapture={handleStopCapture}
-									/>
-								</NetworkSection>
+					<MainContent>
+						<LeftSide>
+							<NetworkSection>
+								<SectionTitle>
+									<ApiOutlined style={{ marginRight: "0.5rem" }} />
+									Network Interfaces
+								</SectionTitle>
+								<NetworkInterfaceSelector
+									isCapturing={isCapturing}
+									onStartCapture={handleStartCapture}
+									onStopCapture={handleStopCapture}
+								/>
+							</NetworkSection>
 
-								<PacketSection>
-									<SectionTitle>
-										<NodeIndexOutlined style={{ marginRight: "0.5rem" }} />
-										Captured Packets
-									</SectionTitle>
-									<PacketList packets={packets} onPacketSelect={handlePacketSelect} />
-								</PacketSection>
-							</LeftSide>
-							<RightSide>
-								<DetailsSection>
-									<SectionTitle>
-										<GroupOutlined style={{ marginRight: "0.5rem" }} />
-										Packet Details
-									</SectionTitle>
-									<PacketDetails packet={selectedPacket} />
-								</DetailsSection>
-							</RightSide>
-						</MainContent>
+							<PacketSection>
+								<SectionTitle>
+									<NodeIndexOutlined style={{ marginRight: "0.5rem" }} />
+									Captured Packets
+								</SectionTitle>
+								<PacketList packets={packets} onPacketSelect={handlePacketSelect} />
+							</PacketSection>
+						</LeftSide>
+						<RightSide>
+							<DetailsSection>
+								<SectionTitle>
+									<GroupOutlined style={{ marginRight: "0.5rem" }} />
+									Packet Details
+								</SectionTitle>
+								<PacketDetails packet={selectedPacket} />
+							</DetailsSection>
+						</RightSide>
+					</MainContent>
 
-						<PermissionModal
-							visible={isPasswordModalVisible}
-							onSubmit={handlePasswordSubmit}
-							onCancel={handlePasswordCancel}
-							errorMessage={passwordErrorMessage}
-						/>
-						<StatusBar />
-					</AppContainer>
-				</AntdApp>
-			</ThemeProvider>
-		</>
+					<PermissionModal
+						visible={isPasswordModalVisible}
+						onSubmit={handlePasswordSubmit}
+						onCancel={handlePasswordCancel}
+						errorMessage={passwordErrorMessage}
+					/>
+					<StatusBar />
+				</AppContainer>
+			</AntdApp>
+		</ThemeProvider>
 	);
 };
 
