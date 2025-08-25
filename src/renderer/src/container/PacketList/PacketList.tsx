@@ -1,11 +1,9 @@
-import { FC, useState, useMemo } from "react";
+import type { PacketData, ParsedPacket } from "@renderer/types/network";
 
-import { Table, Typography, Tag, Tooltip } from "antd";
-import styled from "styled-components";
-
+import { Table, Tag, Tooltip, Typography } from "antd";
 import moment from "moment";
-
-import { PacketData, ParsedPacket } from "@renderer/types/network";
+import { type FC, useMemo, useState } from "react";
+import styled from "styled-components";
 
 const { Text } = Typography;
 

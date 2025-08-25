@@ -1,10 +1,9 @@
-import { app, shell, BrowserWindow, ipcMain, dialog } from "electron";
-import { join } from "path";
-import { networkInterfaces } from "os";
-import { spawn, type ChildProcess } from "child_process";
-
-import { electronApp, optimizer, is } from "@electron-toolkit/utils";
-import { NetworkInterface, PacketData } from "@renderer/types/network";
+import { type ChildProcess, spawn } from "node:child_process";
+import { networkInterfaces } from "node:os";
+import { join } from "node:path";
+import { electronApp, is, optimizer } from "@electron-toolkit/utils";
+import type { NetworkInterface, PacketData } from "@renderer/types/network";
+import { app, BrowserWindow, dialog, ipcMain, shell } from "electron";
 
 import { INTERFACE_MAPPING } from "./constants";
 
@@ -50,7 +49,7 @@ const getRealNetworkInterfaces = () => {
 	}
 
 	// ? Add loopback interface if it doesn't exist
-	const loopbackInterface = interfaces["lo0"] || interfaces["lo"] || interfaces["Loopback"];
+	const loopbackInterface = interfaces.lo0 || interfaces.lo || interfaces.Loopback;
 	if (
 		loopbackInterface &&
 		!result.some(
@@ -98,8 +97,8 @@ const createWindow = (): BrowserWindow => {
 
 	// HMR for renderer base on electron-vite cli.
 	// Load the remote URL for development or the local html file for production.
-	if (is.dev && process.env["ELECTRON_RENDERER_URL"]) {
-		mainWindow.loadURL(process.env["ELECTRON_RENDERER_URL"]);
+	if (is.dev && process.env.ELECTRON_RENDERER_URL) {
+		mainWindow.loadURL(process.env.ELECTRON_RENDERER_URL);
 	} else {
 		mainWindow.loadFile(join(__dirname, "../renderer/index.html"));
 	}
@@ -161,8 +160,8 @@ const createSimplePacket = ({
 		dstBytes = dstBytes.slice(0, 4);
 	} else {
 		// IPv4
-		srcBytes = srcIP.split(".").map((n) => parseInt(n) || 0);
-		dstBytes = dstIP.split(".").map((n) => parseInt(n) || 0);
+		srcBytes = srcIP.split(".").map((n) => parseInt(n, 10) || 0);
+		dstBytes = dstIP.split(".").map((n) => parseInt(n, 10) || 0);
 
 		// Ensure we have 4 bytes
 		while (srcBytes.length < 4) srcBytes.push(0);
@@ -827,7 +826,7 @@ ipcMain.handle("stop-capture", async () => {
 
 	// ? Notify renderer that capture has stopped
 	const mainWindow = BrowserWindow.getAllWindows()[0];
-	if (mainWindow && mainWindow.webContents && !mainWindow.isDestroyed()) {
+	if (mainWindow?.webContents && !mainWindow?.isDestroyed()) {
 		mainWindow.webContents.send("capture-status", {
 			status: "stopped",
 			message: "Capture stopped successfully.",
@@ -860,7 +859,7 @@ app.whenReady().then(() => {
 
 	createWindow();
 
-	app.on("activate", function () {
+	app.on("activate", () => {
 		// On macOS it's common to re-create a window in the app when the
 		// dock icon is clicked and there are no other windows open.
 		if (BrowserWindow.getAllWindows().length === 0) {

@@ -1,4 +1,4 @@
-import { InterfaceMapping } from "./types";
+import type { InterfaceMapping } from "./types";
 
 const INTERFACE_MAPPING: Record<string, InterfaceMapping[]> = {
 	darwin: [

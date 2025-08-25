@@ -1,13 +1,11 @@
-import { FC } from "react";
-
-import { Badge, Typography } from "antd";
 import { WifiOutlined } from "@ant-design/icons";
 
+import { Badge, Typography } from "antd";
+import type { FC } from "react";
+
 import styled from "styled-components";
-
-import { getNetworkStatusColor, getNetworkStatusText } from "./utils";
-
 import { useNetworkStatus } from "../../hooks/useNetworkStatus";
+import { getNetworkStatusColor, getNetworkStatusText } from "./utils";
 
 const { Text } = Typography;
 

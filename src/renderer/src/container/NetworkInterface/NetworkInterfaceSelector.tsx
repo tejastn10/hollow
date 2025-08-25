@@ -1,6 +1,3 @@
-import { FC, useCallback, useEffect, useState } from "react";
-
-import { App, Button, Card, Input, Select, Typography } from "antd";
 import {
 	BlockOutlined,
 	ControlOutlined,
@@ -9,9 +6,10 @@ import {
 	SettingOutlined,
 	StopOutlined,
 } from "@ant-design/icons";
+import type { NetworkInterface } from "@renderer/types/network";
+import { App, Button, Card, Input, Select, Typography } from "antd";
+import { type FC, useCallback, useEffect, useState } from "react";
 import styled from "styled-components";
-
-import { NetworkInterface } from "@renderer/types/network";
 
 const { Title, Text } = Typography;
 

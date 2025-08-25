@@ -1,4 +1,4 @@
-import { ThemeConfig } from "antd";
+import type { ThemeConfig } from "antd";
 
 const LightThemeProvider: ThemeConfig = {
 	token: {
