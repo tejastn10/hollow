@@ -3,6 +3,9 @@ dist
 out
 .eslintcache
 
+# Optional biome cache
+.biome-cache
+
 # Logs
 logs
 *.log
