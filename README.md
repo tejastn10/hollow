@@ -72,8 +72,7 @@ Ensure you have the following installed:
 For the best development experience, we recommend:
 
 - [VSCode](https://code.visualstudio.com/) with the following extensions:
-  - [ESLint](https://marketplace.visualstudio.com/items?itemName=dbaeumer.vscode-eslint)
-  - [Prettier](https://marketplace.visualstudio.com/items?itemName=esbenp.prettier-vscode)
+  - [BiomeJs](https://marketplace.visualstudio.com/items?itemName=biomejs.biome)
 
 ### Available Scripts
 
@@ -157,11 +156,9 @@ hollow/
 ├── .gitignore                  # Git ignore configuration
 ├── .commitlintrc.yml           # Commitlint configuration
 ├── .nvmrc                      # Node version manager config
-├── .prettierignore             # Prettier ignore patterns
-├── .prettierrc.yml             # Prettier configuration
 ├── dev-app-update.yml          # Auto-updater dev configuration
 ├── electron-builder.yml        # Electron builder configuration
-├── eslint.config.mjs           # ESLint configuration
+├── biome.json                  # Biome configuration
 ├── LICENSE.md                  # License file
 ├── package.json                # Project dependencies and scripts
 ├── package-lock.json           # Locked dependencies
