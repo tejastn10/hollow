@@ -1,4 +1,4 @@
-import { NetworkInterface, PacketData } from "./network";
+import type { NetworkInterface, PacketData } from "./network";
 
 interface CaptureResult {
 	success: boolean;
