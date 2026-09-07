@@ -27,4 +27,4 @@ const getNetworkStatusColor = (status: NetworkStatus): string => {
 	}
 };
 
-export { getNetworkStatusText, getNetworkStatusColor };
+export { getNetworkStatusColor, getNetworkStatusText };

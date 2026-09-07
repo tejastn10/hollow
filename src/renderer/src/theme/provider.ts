@@ -117,4 +117,4 @@ const DarkThemeProvider: ThemeConfig = {
 	},
 };
 
-export { LightThemeProvider, DarkThemeProvider };
+export { DarkThemeProvider, LightThemeProvider };

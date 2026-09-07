@@ -35,4 +35,4 @@ interface ParsedPacket extends PacketData {
 	size: number;
 }
 
-export type { NetworkStatus, NetworkInterface, NetworkAddress, PacketData, ParsedPacket };
+export type { NetworkAddress, NetworkInterface, NetworkStatus, PacketData, ParsedPacket };
